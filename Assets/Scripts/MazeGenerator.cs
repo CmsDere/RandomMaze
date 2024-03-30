@@ -170,8 +170,4 @@ public class MazeGenerator : MonoBehaviour
         eastWall.transform.parent = cell.transform;
     }
 
-    void SetFinishPoint(int stage)
-    {
-
-    }
 }
