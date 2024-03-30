@@ -338,6 +338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f243f9713db6f5848934d4a856a502fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stageLength: 3
   maxStraightLength: 4
   width: 20
   height: 20
