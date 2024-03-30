@@ -8,6 +8,7 @@ public class MazeGenerator : MonoBehaviour
 {
     [SerializeField] int stageLength = 3;
     [SerializeField] int maxStraightLength = 4;
+    [SerializeField] float finishPointLengthPercent = 0.7f;
 
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
@@ -15,13 +16,21 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] GameObject wallPrefab;
 
     private bool[,,] visited;
-    GameObject[] stages;
     int[,] cellNum;
+    GameObject[] stages;
+    GameObject[] stageStart;
+    GameObject[] stageFinish;
 
+    
 
     void Start()
     {
         stages = new GameObject[3];
+        stageStart = new GameObject[3];
+        stageFinish = new GameObject[3];
+
+
+
         GenerateMaze();
     }
 
@@ -178,8 +187,24 @@ public class MazeGenerator : MonoBehaviour
         eastWall.transform.parent = cell.transform;
     }
 
-    void SetStartFinishPoint(int stage)
+    void SetStartPoint(int stage)
     {
+        stageStart[stage] = new GameObject($"Stage {stage + 1} Start Point");
+        if (stage == 0)
+        {        
+            stageStart[stage].transform.position = Vector3.zero;
+        }
+        else
+        {
+            stageStart[stage].transform.position = stageFinish[stage - 1].transform.position;
+        }
+    }
 
+    void SetFinishPoint(int stage)
+    {
+        int finishPoint = Random.Range((int)(cellNum.GetLength(1) / finishPointLengthPercent), cellNum.GetLength(1));
+        
+        stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
+        
     }
 }

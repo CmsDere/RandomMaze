@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MazeManager : MonoBehaviour
+public class Cell : MonoBehaviour
 {
-    
+    private int[,] cellNum {  get; set; }
 }
