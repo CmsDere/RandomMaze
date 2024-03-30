@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class MazeGenerator : MonoBehaviour
 {
-    [SerializeField] int maxStraightLength = 4;
     [SerializeField] int stageLength = 3;
+    [SerializeField] int maxStraightLength = 4;
 
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
@@ -16,6 +16,8 @@ public class MazeGenerator : MonoBehaviour
 
     private bool[,,] visited;
     GameObject[] stages;
+    int[,] cellNum;
+
 
     void Start()
     {
@@ -25,19 +27,20 @@ public class MazeGenerator : MonoBehaviour
 
     void GenerateMaze()
     {
-        visited = new bool[width, height,stageLength];       
+        visited = new bool[width, height,stageLength];
+        cellNum = new int[stageLength, width * height - 1];
         InitializeMaze();
         for (int i = 0; i < stageLength; i++)
         {
-            DFS(0, 0, i);
-            stages[i].transform.localScale *= 3;
+            DFS(0, 0, i);           
         }
         
     }
 
-    void DFS(int x, int z, int stage, int prevLengthX = 0, int prevLengthZ = 0)
+    void DFS(int x, int z, int stage, int prevLengthX = 0, int prevLengthZ = 0, int cell = 0)
     {
         visited[x, z, stage] = true;
+        cellNum[stage, cell] += 1;
 
         foreach (var direction in ShuffleDirections())
         {
@@ -52,9 +55,9 @@ public class MazeGenerator : MonoBehaviour
             {
                 // 벽 제거
                 RemoveWall(x, z, newX, newZ, stage);
-
+                cell++;
                 // 새 위치에서 미로 생성
-                DFS(newX, newZ, stage, straightLengthX, straightLengthZ);                
+                DFS(newX, newZ, stage, straightLengthX, straightLengthZ, cell);                
             }
             else if (IsInRange(newX, newZ) && !visited[newX, newZ, stage] 
                 && straightLengthX > maxStraightLength && straightLengthZ > maxStraightLength)
@@ -63,6 +66,11 @@ public class MazeGenerator : MonoBehaviour
                 prevLengthZ = 0;
                 continue;
             }
+        }
+
+        if (cell > cellNum.GetLength(1))
+        {
+            cell = 0;
         }
     }
 
@@ -170,4 +178,8 @@ public class MazeGenerator : MonoBehaviour
         eastWall.transform.parent = cell.transform;
     }
 
+    void SetStartFinishPoint(int stage)
+    {
+
+    }
 }
