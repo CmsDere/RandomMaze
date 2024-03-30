@@ -15,13 +15,15 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject wallPrefab;
 
+    
+
     private bool[,,] visited;
     int[,] cellNum;
     GameObject[] stages;
     GameObject[] stageStart;
     GameObject[] stageFinish;
 
-    
+    int[,] cellNumCs;
 
     void Start()
     {
@@ -29,7 +31,7 @@ public class MazeGenerator : MonoBehaviour
         stageStart = new GameObject[3];
         stageFinish = new GameObject[3];
 
-
+        
 
         GenerateMaze();
     }
@@ -38,6 +40,7 @@ public class MazeGenerator : MonoBehaviour
     {
         visited = new bool[width, height,stageLength];
         cellNum = new int[stageLength, width * height - 1];
+        cellNumCs = cellNum;
         InitializeMaze();
         for (int i = 0; i < stageLength; i++)
         {
@@ -81,6 +84,8 @@ public class MazeGenerator : MonoBehaviour
         {
             cell = 0;
         }
+
+        cellNumCs = cellNum;
     }
 
     List<(int, int)> ShuffleDirections()
@@ -205,6 +210,12 @@ public class MazeGenerator : MonoBehaviour
         int finishPoint = Random.Range((int)(cellNum.GetLength(1) / finishPointLengthPercent), cellNum.GetLength(1));
         
         stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
-        
+        for (int i = 0; i < cellNum.GetLength(1); i++)
+        {
+            if (cellNum[stage, i] == finishPoint)
+            {
+                //stageFinish[stage].transform.position = 
+            }
+        }
     }
 }

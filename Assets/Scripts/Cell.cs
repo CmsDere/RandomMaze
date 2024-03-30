@@ -4,5 +4,10 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    private int[,] cellNum {  get; set; }
+    public int[,] cellNum;
+
+    //public Vector3 FinishPointVector(int stage, int cell)
+    //{
+        
+    //}
 }
