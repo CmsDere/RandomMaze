@@ -198,8 +198,8 @@ public class MazeGenerator : MonoBehaviour
 
     void SetFinishPoint(int stage)
     {
-        int x = Random.Range((int)(width * 0.7f), width);
-        int z = Random.Range((int)(height * 0.7f), height);
+        int x = Random.Range((int)(width * finishPointLengthPercent), width);
+        int z = Random.Range((int)(height * finishPointLengthPercent), height);
 
         stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
         stageFinish[stage].transform.position = new Vector3(x, 0, z);
