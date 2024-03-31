@@ -15,23 +15,16 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject wallPrefab;
 
-    
-
     private bool[,,] visited;
-    int[,] cellNum;
     GameObject[] stages;
     GameObject[] stageStart;
     GameObject[] stageFinish;
-
-    int[,] cellNumCs;
 
     void Start()
     {
         stages = new GameObject[3];
         stageStart = new GameObject[3];
-        stageFinish = new GameObject[3];
-
-        
+        stageFinish = new GameObject[3];       
 
         GenerateMaze();
     }
@@ -39,20 +32,20 @@ public class MazeGenerator : MonoBehaviour
     void GenerateMaze()
     {
         visited = new bool[width, height,stageLength];
-        cellNum = new int[stageLength, width * height - 1];
-        cellNumCs = cellNum;
+
         InitializeMaze();
         for (int i = 0; i < stageLength; i++)
         {
-            DFS(0, 0, i);           
-        }
-        
+            DFS(0, 0, i);
+            SetStartPoint(i);
+            SetFinishPoint(i);
+            MoveMaze(i);
+        }        
     }
 
-    void DFS(int x, int z, int stage, int prevLengthX = 0, int prevLengthZ = 0, int cell = 0)
+    void DFS(int x, int z, int stage, int prevLengthX = 0, int prevLengthZ = 0)
     {
         visited[x, z, stage] = true;
-        cellNum[stage, cell] += 1;
 
         foreach (var direction in ShuffleDirections())
         {
@@ -66,10 +59,10 @@ public class MazeGenerator : MonoBehaviour
                 && straightLengthX <= maxStraightLength && straightLengthZ <= maxStraightLength)
             {
                 // 벽 제거
-                RemoveWall(x, z, newX, newZ, stage);
-                cell++;
+                RemoveWall(x, z, newX, newZ, stage);            
+
                 // 새 위치에서 미로 생성
-                DFS(newX, newZ, stage, straightLengthX, straightLengthZ, cell);                
+                DFS(newX, newZ, stage, straightLengthX, straightLengthZ);
             }
             else if (IsInRange(newX, newZ) && !visited[newX, newZ, stage] 
                 && straightLengthX > maxStraightLength && straightLengthZ > maxStraightLength)
@@ -79,13 +72,6 @@ public class MazeGenerator : MonoBehaviour
                 continue;
             }
         }
-
-        if (cell > cellNum.GetLength(1))
-        {
-            cell = 0;
-        }
-
-        cellNumCs = cellNum;
     }
 
     List<(int, int)> ShuffleDirections()
@@ -167,10 +153,10 @@ public class MazeGenerator : MonoBehaviour
         float distance = cellPrefab.transform.lossyScale.x / 2;
         Vector3 wallHeight = new Vector3(0, wallPrefab.transform.lossyScale.y / 2, 0);
         float stageHeight = i;
-     
+
         GameObject cell = Instantiate(cellPrefab, new Vector3(x, stageHeight, z), Quaternion.identity);
         cell.name = $"Stage {i + 1} Cell {x} {z}";
-        cell.transform.parent = stages[i].transform;
+        cell.transform.parent = stages[i].transform;     
 
         // 상하좌우 벽 생성       
         Vector3 basePosition = cell.transform.position;
@@ -178,18 +164,22 @@ public class MazeGenerator : MonoBehaviour
         GameObject northWall = Instantiate(wallPrefab, basePosition + Vector3.forward * distance + wallHeight, Quaternion.Euler(0, 90, 0));
         northWall.name = $"Stage {i + 1} North Wall {basePosition.x} {basePosition.z}";
         northWall.transform.parent = cell.transform;
+        northWall.tag = "Wall";
 
         GameObject southWall = Instantiate(wallPrefab, basePosition + Vector3.back * distance + wallHeight, Quaternion.Euler(0, 90, 0));
         southWall.name = $"Stage {i + 1} South Wall {basePosition.x} {basePosition.z}";
         southWall.transform.parent = cell.transform;
+        southWall.tag = "Wall";
 
         GameObject westWall = Instantiate(wallPrefab, basePosition + Vector3.left * distance + wallHeight, Quaternion.identity);
         westWall.name = $"Stage {i + 1} West Wall {basePosition.x} {basePosition.z}";
         westWall.transform.parent = cell.transform;
+        westWall.tag = "Wall";
 
         GameObject eastWall = Instantiate(wallPrefab, basePosition + Vector3.right * distance + wallHeight, Quaternion.identity);
         eastWall.name = $"Stage {i + 1} East Wall {basePosition.x} {basePosition.z}";
         eastWall.transform.parent = cell.transform;
+        eastWall.tag = "Wall";
     }
 
     void SetStartPoint(int stage)
@@ -201,21 +191,25 @@ public class MazeGenerator : MonoBehaviour
         }
         else
         {
-            stageStart[stage].transform.position = stageFinish[stage - 1].transform.position;
+            stageStart[stage].transform.position = stageFinish[stage-1].transform.position;
         }
+        stageStart[stage].transform.parent = stages[stage].transform;
     }
 
     void SetFinishPoint(int stage)
     {
-        int finishPoint = Random.Range((int)(cellNum.GetLength(1) / finishPointLengthPercent), cellNum.GetLength(1));
-        
+        int x = Random.Range((int)(width * 0.7f), width);
+        int z = Random.Range((int)(height * 0.7f), height);
+
         stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
-        for (int i = 0; i < cellNum.GetLength(1); i++)
-        {
-            if (cellNum[stage, i] == finishPoint)
-            {
-                //stageFinish[stage].transform.position = 
-            }
-        }
+        stageFinish[stage].transform.position = new Vector3(x, 0, z);
+        stageFinish[stage].transform.parent = stages[stage].transform;
+    }
+
+    void MoveMaze(int stage)
+    {
+        stages[stage].transform.position = stageStart[stage].transform.position;
+
+        
     }
 }
