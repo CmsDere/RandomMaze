@@ -6,15 +6,23 @@ using UnityEngine;
 
 public class MazeGenerator : MonoBehaviour
 {
+    [Header("미로 생성 관련 변수")]
     [SerializeField] int stageLength = 3;
     [SerializeField] int maxStraightLength = 4;
     [SerializeField] float finishPointLengthPercent = 0.7f;
-
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
+
+    [Header("미로 생성 관련 프리팹")]
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject wallPrefab;
 
+    // 미로 데이터 관련
+    int mazeStage;
+    int mazeCell;
+    Vector3 mazeCellPos;
+    List<(string, Vector3)> mazeWall;
+    
     private bool[,,] visited;
     GameObject[] stages;
     GameObject[] stageStart;
@@ -22,6 +30,11 @@ public class MazeGenerator : MonoBehaviour
 
     void Start()
     {
+        mazeStage = cellPrefab.GetComponent<MazeData>().stage;
+        mazeCell = cellPrefab.GetComponent<MazeData>().cell;
+        mazeCellPos = cellPrefab.GetComponent<MazeData>().cellPos;
+        mazeWall = cellPrefab.GetComponent<MazeData>().wall;
+
         stages = new GameObject[3];
         stageStart = new GameObject[3];
         stageFinish = new GameObject[3];       
@@ -180,6 +193,13 @@ public class MazeGenerator : MonoBehaviour
         eastWall.name = $"Stage {i + 1} East Wall {basePosition.x} {basePosition.z}";
         eastWall.transform.parent = cell.transform;
         eastWall.tag = "Wall";
+
+
+    }
+
+    void SaveMazeData()
+    {
+
     }
 
     void SetStartPoint(int stage)
