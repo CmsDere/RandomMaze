@@ -16,25 +16,16 @@ public class MazeGenerator : MonoBehaviour
     [Header("미로 생성 관련 프리팹")]
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject wallPrefab;
-
-    // 미로 데이터 관련
-    int mazeStage;
-    int mazeCell;
-    Vector3 mazeCellPos;
-    List<(string, Vector3)> mazeWall;
+    [SerializeField] GameObject stairPrefab;
     
     private bool[,,] visited;
     GameObject[] stages;
     GameObject[] stageStart;
     GameObject[] stageFinish;
+    int c = 0;
 
     void Start()
     {
-        mazeStage = cellPrefab.GetComponent<MazeData>().stage;
-        mazeCell = cellPrefab.GetComponent<MazeData>().cell;
-        mazeCellPos = cellPrefab.GetComponent<MazeData>().cellPos;
-        mazeWall = cellPrefab.GetComponent<MazeData>().wall;
-
         stages = new GameObject[3];
         stageStart = new GameObject[3];
         stageFinish = new GameObject[3];       
@@ -157,8 +148,7 @@ public class MazeGenerator : MonoBehaviour
                     CreateCell(x, z, i);
                 }
             }
-        }
-        
+        }       
     }
 
     void CreateCell(int x, int z, int i)
@@ -194,12 +184,12 @@ public class MazeGenerator : MonoBehaviour
         eastWall.transform.parent = cell.transform;
         eastWall.tag = "Wall";
 
-
-    }
-
-    void SaveMazeData()
-    {
-
+        cell.GetComponent<Cell>().SetCellData(i, c++, cell.transform.position);
+        cell.GetComponent<Cell>().SetCellType();
+        northWall.GetComponent<Wall>().SetWallData(DIRECTION.NORTH, northWall.transform.position, i);
+        southWall.GetComponent<Wall>().SetWallData(DIRECTION.SOUTH, southWall.transform.position, i);
+        westWall.GetComponent<Wall>().SetWallData(DIRECTION.WEST, westWall.transform.position, i);
+        eastWall.GetComponent<Wall>().SetWallData(DIRECTION.EAST, eastWall.transform.position, i);
     }
 
     void SetStartPoint(int stage)
@@ -214,6 +204,7 @@ public class MazeGenerator : MonoBehaviour
             stageStart[stage].transform.position = stageFinish[stage-1].transform.position;
         }
         stageStart[stage].transform.parent = stages[stage].transform;
+        //stageStart[stage].GetComponent<Cell>().SetCellType(CELL_TYPE.START);
     }
 
     void SetFinishPoint(int stage)
@@ -224,12 +215,13 @@ public class MazeGenerator : MonoBehaviour
         stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
         stageFinish[stage].transform.position = new Vector3(x, 0, z);
         stageFinish[stage].transform.parent = stages[stage].transform;
+        //stageFinish[stage].GetComponent<Cell>().SetCellType(CELL_TYPE.FINISH);
     }
 
     void MoveMaze(int stage)
     {
-        stages[stage].transform.position = stageStart[stage].transform.position;
-
-        
+        stages[stage].transform.position = stageStart[stage].transform.position;        
     }
+
+    
 }
