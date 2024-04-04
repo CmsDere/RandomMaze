@@ -20,14 +20,12 @@ public class MazeGenerator : MonoBehaviour
     
     private bool[,,] visited;
     GameObject[] stages;
-    GameObject[] stageStart;
     GameObject[] stageFinish;
     int c = 0;
 
     void Start()
     {
         stages = new GameObject[3];
-        stageStart = new GameObject[3];
         stageFinish = new GameObject[3];       
 
         GenerateMaze();
@@ -157,12 +155,12 @@ public class MazeGenerator : MonoBehaviour
         Vector3 wallHeight = new Vector3(0, wallPrefab.transform.lossyScale.y / 2, 0);
         float stageHeight = i;
 
-        GameObject cell = Instantiate(cellPrefab, new Vector3(x, stageHeight, z), Quaternion.identity);
+        GameObject cell = Instantiate(cellPrefab, transform.TransformDirection(new Vector3(x, stageHeight, z)), Quaternion.identity);
         cell.name = $"Stage {i + 1} Cell {x} {z}";
         cell.transform.parent = stages[i].transform;     
 
         // 상하좌우 벽 생성       
-        Vector3 basePosition = cell.transform.position;
+        Vector3 basePosition = transform.TransformDirection(cell.transform.position);
 
         GameObject northWall = Instantiate(wallPrefab, basePosition + Vector3.forward * distance + wallHeight, Quaternion.Euler(0, 90, 0));
         northWall.name = $"Stage {i + 1} North Wall {basePosition.x} {basePosition.z}";
@@ -184,15 +182,30 @@ public class MazeGenerator : MonoBehaviour
         eastWall.transform.parent = cell.transform;
         eastWall.tag = "Wall";
 
-        cell.GetComponent<Cell>().SetCellData(i, c++, cell.transform.position);
+        cell.GetComponent<Cell>().SetCellData(i, c++, basePosition);
         cell.GetComponent<Cell>().SetCellType();
-        northWall.GetComponent<Wall>().SetWallData(DIRECTION.NORTH, northWall.transform.position, i);
-        southWall.GetComponent<Wall>().SetWallData(DIRECTION.SOUTH, southWall.transform.position, i);
-        westWall.GetComponent<Wall>().SetWallData(DIRECTION.WEST, westWall.transform.position, i);
-        eastWall.GetComponent<Wall>().SetWallData(DIRECTION.EAST, eastWall.transform.position, i);
+        northWall.GetComponent<Wall>().SetWallData(DIRECTION.NORTH, northWall.transform.localPosition, i);
+        southWall.GetComponent<Wall>().SetWallData(DIRECTION.SOUTH, southWall.transform.localPosition, i);
+        westWall.GetComponent<Wall>().SetWallData(DIRECTION.WEST, westWall.transform.localPosition, i);
+        eastWall.GetComponent<Wall>().SetWallData(DIRECTION.EAST, eastWall.transform.localPosition, i);
     }
 
     void SetStartPoint(int stage)
+    {
+        
+        if (stage == 0)
+        {
+            GameObject.Find($"Stage {stage + 1} Cell 0 0").GetComponent<Cell>().SetCellType(CELL_TYPE.START);
+            
+        }
+    }
+
+    void SetFinishPoint(int stage)
+    {
+        
+    }
+
+    /*void SetStartPoint(int stage)
     {
         stageStart[stage] = new GameObject($"Stage {stage + 1} Start Point");
         if (stage == 0)
@@ -213,14 +226,14 @@ public class MazeGenerator : MonoBehaviour
         int z = Random.Range((int)(height * finishPointLengthPercent), height);
 
         stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
-        stageFinish[stage].transform.position = new Vector3(x, 0, z);
+        stageFinish[stage].transform.position = transform.TransformDirection(new Vector3(x, stage, z));
         stageFinish[stage].transform.parent = stages[stage].transform;
         //stageFinish[stage].GetComponent<Cell>().SetCellType(CELL_TYPE.FINISH);
-    }
+    }*/
 
     void MoveMaze(int stage)
     {
-        stages[stage].transform.position = stageStart[stage].transform.position;        
+        //stages[stage].transform.position = stageStart[stage].transform.position;        
     }
 
     
