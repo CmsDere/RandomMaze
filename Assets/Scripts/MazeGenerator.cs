@@ -1,240 +1,295 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
-public class MazeGenerator : MonoBehaviour
+public class MazeGenerator : MazeComponent
 {
-    [Header("미로 생성 관련 변수")]
-    [SerializeField] int stageLength = 3;
-    [SerializeField] int maxStraightLength = 4;
-    [SerializeField] float finishPointLengthPercent = 0.7f;
-    [SerializeField] int width = 10;
-    [SerializeField] int height = 10;
+    [Header("미로 생성 관련 설정 변수")]
+    [SerializeField] int maxRunwayLength = 4;
 
-    [Header("미로 생성 관련 프리팹")]
+    [Header("미로 생성 프리팹")]
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject stairPrefab;
-    
-    private bool[,,] visited;
-    GameObject[] stages;
-    GameObject[] stageFinish;
-    int c = 0;
+    [SerializeField] GameObject straightPrefab;
+
+    bool[,,] visited;
+    public GameObject[,,] cellObjects; // [x, stage, z]
+    public GameObject[,,,] wallObjects; // [x, stage, z, direction]  
+    public GameObject[,,] straightObjects;
+    GameObject[] stageObjects;
+    GameObject[] stairObjects;
+
+    Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
 
     void Start()
     {
-        stages = new GameObject[3];
-        stageFinish = new GameObject[3];       
+        stageObjects = new GameObject[stageLength];
+        stairObjects = new GameObject[stageLength];
+        visited = new bool[mazeWidth, mazeHeight, stageLength];
+        cellObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
+        wallObjects = new GameObject[mazeWidth, stageLength, mazeHeight, (int)DIRECTION.MAX];
+        straightObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
 
         GenerateMaze();
     }
 
     void GenerateMaze()
     {
-        visited = new bool[width, height,stageLength];
-
         InitializeMaze();
         for (int i = 0; i < stageLength; i++)
         {
             DFS(0, 0, i);
-            SetStartPoint(i);
-            SetFinishPoint(i);
-            MoveMaze(i);
-        }        
+            DetermineExit(i);
+            CreateStraightObjects(i);
+        }
     }
 
-    void DFS(int x, int z, int stage, int prevLengthX = 0, int prevLengthZ = 0)
+    void InitializeMaze()
+    {  
+        for (int i = 0; i < stageLength; i++)
+        {
+            stageObjects[i] = new GameObject($"Stage {i+1}");
+            stageObjects[i].transform.parent = this.transform;
+            for (int x = 0; x < mazeWidth; x++)
+            {
+                for (int z = 0; z < mazeHeight; z++)
+                {
+                    CreateCell(x, z, i);
+                }
+            }
+        }
+    }
+
+    void DFS(int x, int z, int stage, Vector3Int cell = default(Vector3Int), int distance = 0, int prevLengthX = 0, int prevLengthZ = 0)
     {
         visited[x, z, stage] = true;
+        distanceMap[cell] = distance;
 
-        foreach (var direction in ShuffleDirections())
+        foreach(var dir in ShuffleDirection())
         {
-            int newX = x + direction.Item1;
-            int newZ = z + direction.Item2;
+            int newX = x + dir.Item1;
+            int newZ = z + dir.Item2;
 
-            int straightLengthX = (x - newX != 0) ? prevLengthX + 1 : 1;
-            int straightLengthZ = (z - newZ != 0) ? prevLengthZ + 1 : 1;
+            int runwayLengthX = (x - newX != 0) ? prevLengthX+1 : 1;
+            int runwayLengthZ = (z - newZ != 0) ? prevLengthZ+1 : 1;
 
-            if (IsInRange(newX, newZ) && !visited[newX, newZ, stage] 
-                && straightLengthX <= maxStraightLength && straightLengthZ <= maxStraightLength)
+            Vector3Int nextCell = new Vector3Int(cell.x + dir.Item1, stage, cell.z + dir.Item2);
+
+            if (IsInRange(newX, newZ) && !visited[newX, newZ, stage]
+                && runwayLengthX <= maxRunwayLength && runwayLengthZ <= maxRunwayLength)
             {
                 // 벽 제거
-                RemoveWall(x, z, newX, newZ, stage);            
+                RemoveWall(x, z, newX, newZ, stage);
 
                 // 새 위치에서 미로 생성
-                DFS(newX, newZ, stage, straightLengthX, straightLengthZ);
+                DFS(newX, newZ, stage, nextCell, distance + 1, runwayLengthX, runwayLengthZ);
             }
-            else if (IsInRange(newX, newZ) && !visited[newX, newZ, stage] 
-                && straightLengthX > maxStraightLength && straightLengthZ > maxStraightLength)
+            else if (IsInRange(newX, newZ) && !visited[newX, newZ, stage]
+                && runwayLengthX > maxRunwayLength && runwayLengthZ > maxRunwayLength)
             {
                 prevLengthX = 0;
                 prevLengthZ = 0;
                 continue;
+            }          
+        }
+    }
+
+    void CreateStraightObjects(int i)
+    {
+        for (int x = 0; x < mazeWidth; x++)
+        {
+            for (int z = 0; z < mazeHeight; z++)
+            {
+                if (IsStraightPath(x, z, i))
+                {
+                    straightObjects[x, i, z] = Instantiate
+                    (
+                        straightPrefab,
+                        transform.TransformDirection(new Vector3(x, i, z)),
+                        Quaternion.identity,
+                        cellObjects[x, i, z].transform
+                    );
+                }
             }
         }
     }
 
-    List<(int, int)> ShuffleDirections()
+    bool IsStraightPath(int x, int z, int stage)
     {
-        List<(int, int)> directions = new List<(int, int)>
-        {
-            (1, 0),
-            (-1, 0),
-            (0, 1),
-            (0, -1)
-        };
+        if (IsInRange(x, z)) return false;
 
-        return directions.OrderBy(x => Random.Range(0, directions.Count)).ToList();
+        int accessibleDirection = 0;
+
+        if (!visited[x, z + 1, stage]) accessibleDirection++;
+        if (!visited[x, z - 1, stage]) accessibleDirection++;
+        if (!visited[x + 1, z, stage]) accessibleDirection++;
+        if (!visited[x - 1, z, stage]) accessibleDirection++;
+
+        return accessibleDirection == 1;
     }
 
-    bool IsInRange(int x, int y)
+    void DetermineExit(int stage)
     {
-        return x >= 0 && y >= 0 && x < width && y < height;
+        // 가장 먼 거리 찾기
+        int maxDistance = distanceMap.Values.Max();
+        // 해당 거리에 있는 셀 중 하나를 출구로 선택
+        Vector3Int exitCell = distanceMap.FirstOrDefault(x => x.Value == maxDistance).Key;
+        // 출구로 지정
+        SetAsExit(exitCell, stage);
     }
 
-    // 벽 제거
-    // 0번 벽 : 동쪽, 1번 벽 : 서쪽, 2번 벽 : 북쪽, 3번 벽 : 남쪽
-
-    // 동쪽 진행 : z와 newZ가 같고 x가 newX보다 작을 때 x의 동쪽 벽, newX의 서쪽 벽 제거
-    // 서쪽 진행 : z와 newZ가 같고 x가 newX보다 클 때 x의 서쪽 벽, newX의 동쪽 벽 제거
-    // 북쪽 진행 : x와 newX가 같고 z가 newZ보다 작을 때 z의 북쪽 벽, newZ의 남쪽 벽 제거
-    // 남쪽 진행 : x와 newX가 같고 z가 newZ보다 클 때 z의 남쪽 벽, newZ의 북쪽 벽 제거
-    void RemoveWall(int x, int z, int newX, int newZ, int stage)
+    void SetAsExit(Vector3Int exitCell, int stage)
     {
-        // 북쪽 진행
-        if (x == newX && z < newZ)
+        float stairHeight = stairPrefab.transform.lossyScale.y / 2;
+        
+        if (stage < stageLength - 1)
         {
-            Destroy(GameObject.Find($"Stage {stage + 1} North Wall {x} {z}"));
-            Destroy(GameObject.Find($"Stage {stage + 1} South Wall {newX} {newZ}"));
-        }
-        // 남쪽 진행
-        else if (x == newX && z > newZ)
-        {
-            Destroy(GameObject.Find($"Stage {stage + 1} South Wall {x} {z}"));
-            Destroy(GameObject.Find($"Stage {stage + 1} North Wall {newX} {newZ}"));
-        }
-        // 동쪽 진행
-        else if (z == newZ && x < newX)
-        {
-            Destroy(GameObject.Find($"Stage {stage + 1} East Wall {x} {z}"));
-            Destroy(GameObject.Find($"Stage {stage + 1} West Wall {newX} {newZ}"));
-        }
-        // 서쪽 진행
-        else if (z == newZ && x > newX)
-        {
-            Destroy(GameObject.Find($"Stage {stage + 1} West Wall {x} {z}"));
-            Destroy(GameObject.Find($"Stage {stage + 1} East Wall {newX} {newZ}"));
+            stairObjects[stage] = Instantiate
+            (
+                stairPrefab,
+                transform.TransformDirection(cellObjects[exitCell.x, exitCell.y, exitCell.z].transform.position + new Vector3(0, stage + stairHeight, 0)),
+                StairDirection(exitCell.x, exitCell.y, exitCell.z)
+            );
+            stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCell.x}, {exitCell.z})";
+            stairObjects[stage].transform.parent = stageObjects[stage].transform;
         }
         else
         {
             return;
         }
+        
     }
 
-    void InitializeMaze()
+    Quaternion StairDirection(int x, int stage, int z)
     {
-        for (int i = 0; i < stageLength; i++)
+        Quaternion result = Quaternion.identity;
+
+        for (int i = 0; i < (int)DIRECTION.MAX; i++)
         {
-            stages[i] = new GameObject($"Stage {i+1}");
-            stages[i].transform.parent = this.transform;
-            for (int x = 0; x < width; x++)
+            if (wallObjects[x, stage, z, i].activeSelf == false)
             {
-                for (int z = 0; z < height; z++)
+                if (i == 0)
                 {
-                    CreateCell(x, z, i);
+                    result = Quaternion.Euler(0, 180, 0);
+                }
+                else if (i == 1)
+                {
+                    result = Quaternion.identity;
+                }
+                else if (i == 2)
+                {
+                    result = Quaternion.Euler(0, 90, 0);
+                }
+                else
+                {
+                    result = Quaternion.Euler(0, -90, 0);
                 }
             }
-        }       
-    }
-
-    void CreateCell(int x, int z, int i)
-    {
-        float distance = cellPrefab.transform.lossyScale.x / 2;
-        Vector3 wallHeight = new Vector3(0, wallPrefab.transform.lossyScale.y / 2, 0);
-        float stageHeight = i;
-
-        GameObject cell = Instantiate(cellPrefab, transform.TransformDirection(new Vector3(x, stageHeight, z)), Quaternion.identity);
-        cell.name = $"Stage {i + 1} Cell {x} {z}";
-        cell.transform.parent = stages[i].transform;     
-
-        // 상하좌우 벽 생성       
-        Vector3 basePosition = transform.TransformDirection(cell.transform.position);
-
-        GameObject northWall = Instantiate(wallPrefab, basePosition + Vector3.forward * distance + wallHeight, Quaternion.Euler(0, 90, 0));
-        northWall.name = $"Stage {i + 1} North Wall {basePosition.x} {basePosition.z}";
-        northWall.transform.parent = cell.transform;
-        northWall.tag = "Wall";
-
-        GameObject southWall = Instantiate(wallPrefab, basePosition + Vector3.back * distance + wallHeight, Quaternion.Euler(0, 90, 0));
-        southWall.name = $"Stage {i + 1} South Wall {basePosition.x} {basePosition.z}";
-        southWall.transform.parent = cell.transform;
-        southWall.tag = "Wall";
-
-        GameObject westWall = Instantiate(wallPrefab, basePosition + Vector3.left * distance + wallHeight, Quaternion.identity);
-        westWall.name = $"Stage {i + 1} West Wall {basePosition.x} {basePosition.z}";
-        westWall.transform.parent = cell.transform;
-        westWall.tag = "Wall";
-
-        GameObject eastWall = Instantiate(wallPrefab, basePosition + Vector3.right * distance + wallHeight, Quaternion.identity);
-        eastWall.name = $"Stage {i + 1} East Wall {basePosition.x} {basePosition.z}";
-        eastWall.transform.parent = cell.transform;
-        eastWall.tag = "Wall";
-
-        cell.GetComponent<Cell>().SetCellData(i, c++, basePosition);
-        cell.GetComponent<Cell>().SetCellType();
-        northWall.GetComponent<Wall>().SetWallData(DIRECTION.NORTH, northWall.transform.localPosition, i);
-        southWall.GetComponent<Wall>().SetWallData(DIRECTION.SOUTH, southWall.transform.localPosition, i);
-        westWall.GetComponent<Wall>().SetWallData(DIRECTION.WEST, westWall.transform.localPosition, i);
-        eastWall.GetComponent<Wall>().SetWallData(DIRECTION.EAST, eastWall.transform.localPosition, i);
-    }
-
-    void SetStartPoint(int stage)
-    {
-        
-        if (stage == 0)
-        {
-            GameObject.Find($"Stage {stage + 1} Cell 0 0").GetComponent<Cell>().SetCellType(CELL_TYPE.START);
-            
+            else
+            {
+                continue;
+            }
         }
+
+        return result;
     }
 
-    void SetFinishPoint(int stage)
+    void RemoveWall(int x, int z, int newX, int newZ, int stage)
     {
-        
-    }
-
-    /*void SetStartPoint(int stage)
-    {
-        stageStart[stage] = new GameObject($"Stage {stage + 1} Start Point");
-        if (stage == 0)
-        {        
-            stageStart[stage].transform.position = Vector3.zero;
+        if (x == newX && z < newZ)
+        {
+            wallObjects[x, stage, z, (int)DIRECTION.NORTH].SetActive(false);
+            wallObjects[newX, stage, newZ, (int)DIRECTION.SOUTH].SetActive(false);
+        }
+        else if (x == newX && z > newZ)
+        {
+            wallObjects[x, stage, z, (int)DIRECTION.SOUTH].SetActive(false);
+            wallObjects[newX, stage, newZ, (int)DIRECTION.NORTH].SetActive(false);
+        }
+        else if (z == newZ && x < newX)
+        {
+            wallObjects[x, stage, z, (int)DIRECTION.EAST].SetActive(false);
+            wallObjects[newX, stage, newZ, (int)DIRECTION.WEST].SetActive(false);
+        }
+        else if (z == newZ && x > newX)
+        {
+            wallObjects[x, stage, z, (int)DIRECTION.WEST].SetActive(false);
+            wallObjects[newX, stage, newZ, (int)DIRECTION.EAST].SetActive(false);
         }
         else
-        {
-            stageStart[stage].transform.position = stageFinish[stage-1].transform.position;
-        }
-        stageStart[stage].transform.parent = stages[stage].transform;
-        //stageStart[stage].GetComponent<Cell>().SetCellType(CELL_TYPE.START);
+            return;
     }
 
-    void SetFinishPoint(int stage)
+    List<(int, int)> ShuffleDirection()
     {
-        int x = Random.Range((int)(width * finishPointLengthPercent), width);
-        int z = Random.Range((int)(height * finishPointLengthPercent), height);
+        List<(int, int)> directions = new List<(int, int)>
+        {
+            (1, 0), (-1, 0), (0, 1), (0, -1)
+        };
 
-        stageFinish[stage] = new GameObject($"Stage {stage + 1} Finish Point");
-        stageFinish[stage].transform.position = transform.TransformDirection(new Vector3(x, stage, z));
-        stageFinish[stage].transform.parent = stages[stage].transform;
-        //stageFinish[stage].GetComponent<Cell>().SetCellType(CELL_TYPE.FINISH);
-    }*/
-
-    void MoveMaze(int stage)
-    {
-        //stages[stage].transform.position = stageStart[stage].transform.position;        
+        return directions.OrderBy(x => Random.Range(0, directions.Count)).ToList();
     }
 
     
+
+    void CreateCell(int x, int z, int stage)
+    {
+        float distance = cellPrefab.transform.lossyScale.x / 2;
+        Vector3 wallHeight = new Vector3(0, wallPrefab.transform.lossyScale.y / 2, 0);
+        float stageHeigth = stage;
+
+        // 지점 오브젝트 Instantiate
+        cellObjects[x, stage, z] = Instantiate
+        (
+            cellPrefab, 
+            transform.TransformDirection(new Vector3(x, stageHeigth, z)), 
+            Quaternion.identity
+        );
+        cellObjects[x, stage, z].name = $"Stage {stage+1} Cell ({x}, {z})";
+        cellObjects[x, stage, z].transform.parent = stageObjects[stage].transform;
+        cellObjects[x, stage, z].tag = "Cell";
+
+        Vector3 basePosition = transform.TransformDirection(cellObjects[x, stage, z].transform.position);
+
+        // 벽 오브젝트 Instantiate
+        wallObjects[x, stage, z, (int)DIRECTION.NORTH] = Instantiate
+        (
+            wallPrefab,
+            basePosition + (Vector3.forward * distance) + wallHeight,
+            Quaternion.Euler(0, 90, 0)
+        );
+        wallObjects[x, stage, z, (int)DIRECTION.SOUTH] = Instantiate
+        (
+            wallPrefab,
+            basePosition + (Vector3.back * distance) + wallHeight,
+            Quaternion.Euler(0, 90, 0)
+        );
+        wallObjects[x, stage, z, (int)DIRECTION.WEST] = Instantiate
+        (
+            wallPrefab,
+            basePosition + (Vector3.left * distance) + wallHeight,
+            Quaternion.identity
+        );
+        wallObjects[x, stage, z, (int)DIRECTION.EAST] = Instantiate
+        (
+            wallPrefab,
+            basePosition + (Vector3.right * distance) + wallHeight,
+            Quaternion.identity
+        );
+
+        // 벽 오브젝트 이름 지정
+        wallObjects[x, stage, z, (int)DIRECTION.NORTH].name = $"Stage {stage+1} North Wall ({x}, {z})";
+        wallObjects[x, stage, z, (int)DIRECTION.SOUTH].name = $"Stage {stage+1} South Wall ({x}, {z})";
+        wallObjects[x, stage, z, (int)DIRECTION.WEST].name = $"Stage {stage+1} West Wall ({x}, {z})";
+        wallObjects[x, stage, z, (int)DIRECTION.EAST].name = $"Stage {stage+1} East Wall ({x}, {z})";
+
+        // 벽 오브젝트 부모 지정
+        for (int i = 0; i < (int)DIRECTION.MAX; i++)
+        {
+            wallObjects[x, stage, z, i].transform.parent = cellObjects[x, stage, z].transform;
+            wallObjects[x, stage, z, i].tag = "Wall";
+        }      
+    }
 }
