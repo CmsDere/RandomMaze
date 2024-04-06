@@ -111,6 +111,7 @@ public class MazeGenerator : MazeComponent
                         Quaternion.identity,
                         cellObjects[x, i, z].transform
                     );
+                    straightObjects[x, i, z].name = $"Stage {i+1} StraightObject ({x}, {z})";
                 }
             }
         }
