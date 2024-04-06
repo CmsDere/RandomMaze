@@ -159,6 +159,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 2742344623750909142, guid: 390fd95b3222d9341be3bd105e4562d6, type: 3}
   wallPrefab: {fileID: 5184235650078627104, guid: 969758f0d3e4a294ebb7e519cf2c81db, type: 3}
   stairPrefab: {fileID: 2934020102608372880, guid: e3078b106f997f946975c0b1165c2a6b, type: 3}
+  straightPrefab: {fileID: 5615749808797895939, guid: 36f712ef08a1a0a4eabd4c1f8460371f, type: 3}
 --- !u!4 &68757816
 Transform:
   m_ObjectHideFlags: 0

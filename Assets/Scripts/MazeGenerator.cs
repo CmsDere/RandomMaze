@@ -42,7 +42,6 @@ public class MazeGenerator : MazeComponent
         {
             DFS(0, 0, i);
             DetermineExit(i);
-            CreateStraightObjects(i);
         }
     }
 
@@ -94,40 +93,6 @@ public class MazeGenerator : MazeComponent
                 continue;
             }          
         }
-    }
-
-    void CreateStraightObjects(int i)
-    {
-        for (int x = 0; x < mazeWidth; x++)
-        {
-            for (int z = 0; z < mazeHeight; z++)
-            {
-                if (IsStraightPath(x, z, i))
-                {
-                    straightObjects[x, i, z] = Instantiate
-                    (
-                        straightPrefab,
-                        transform.TransformDirection(new Vector3(x, i, z)),
-                        Quaternion.identity,
-                        cellObjects[x, i, z].transform
-                    );
-                }
-            }
-        }
-    }
-
-    bool IsStraightPath(int x, int z, int stage)
-    {
-        if (IsInRange(x, z)) return false;
-
-        int accessibleDirection = 0;
-
-        if (!visited[x, z + 1, stage]) accessibleDirection++;
-        if (!visited[x, z - 1, stage]) accessibleDirection++;
-        if (!visited[x + 1, z, stage]) accessibleDirection++;
-        if (!visited[x - 1, z, stage]) accessibleDirection++;
-
-        return accessibleDirection == 1;
     }
 
     void DetermineExit(int stage)
@@ -231,8 +196,6 @@ public class MazeGenerator : MazeComponent
 
         return directions.OrderBy(x => Random.Range(0, directions.Count)).ToList();
     }
-
-    
 
     void CreateCell(int x, int z, int stage)
     {
