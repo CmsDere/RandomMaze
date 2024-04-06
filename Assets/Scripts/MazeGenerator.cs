@@ -95,6 +95,44 @@ public class MazeGenerator : MazeComponent
         }
     }
 
+<<<<<<< HEAD
+=======
+    void CreateStraightObjects(int i)
+    {
+        for (int x = 0; x < mazeWidth; x++)
+        {
+            for (int z = 0; z < mazeHeight; z++)
+            {
+                if (IsStraightPath(x, z, i))
+                {
+                    straightObjects[x, i, z] = Instantiate
+                    (
+                        straightPrefab,
+                        transform.TransformDirection(new Vector3(x, i, z)),
+                        Quaternion.identity,
+                        cellObjects[x, i, z].transform
+                    );
+                    straightObjects[x, i, z].name = $"Stage {i+1} StraightObject ({x}, {z})";
+                }
+            }
+        }
+    }
+
+    bool IsStraightPath(int x, int z, int stage)
+    {
+        if (IsInRange(x, z)) return false;
+
+        int accessibleDirection = 0;
+
+        if (!visited[x, z + 1, stage]) accessibleDirection++;
+        if (!visited[x, z - 1, stage]) accessibleDirection++;
+        if (!visited[x + 1, z, stage]) accessibleDirection++;
+        if (!visited[x - 1, z, stage]) accessibleDirection++;
+
+        return accessibleDirection == 1;
+    }
+
+>>>>>>> 92e1d181b927599db03bad2b9c2613a1fb2fdf93
     void DetermineExit(int stage)
     {
         // 가장 먼 거리 찾기
