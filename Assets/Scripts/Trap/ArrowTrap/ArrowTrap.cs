@@ -4,15 +4,31 @@ using UnityEngine;
 
 public class ArrowTrap : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [Header("화살 함정 관련 변수")]
+    [SerializeField] int arrowCount = 10;
+
+    [Header("화살 함정 관련 프리팹")]
+    [SerializeField] GameObject arrowPrefab;
+
+    GameObject[,,,] wallObjects;
+    GameObject[] arrowObjects;
+
     void Start()
     {
-        
+        wallObjects = GetComponent<MazeGenerator>().wallObjects;
+        arrowObjects = new GameObject[arrowCount];
     }
 
-    // Update is called once per frame
-    void Update()
+    void CreateArrow()
     {
-        
+        for (int i = 0; i < arrowCount; i++)
+        {
+            arrowObjects[i] = Instantiate
+                (
+                    arrowPrefab,
+                    wallObjects[1, 1, 1, 1].transform.position,
+                    Quaternion.identity
+                );
+        }
     }
 }

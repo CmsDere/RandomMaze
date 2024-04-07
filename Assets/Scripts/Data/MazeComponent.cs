@@ -33,4 +33,6 @@ public class MazeComponent : MonoBehaviour
     {
         return x >= 0 && z >= 0 && x < mazeWidth && z < mazeHeight;
     }
+
+    
 }

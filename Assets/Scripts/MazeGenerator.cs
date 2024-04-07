@@ -5,21 +5,32 @@ using UnityEngine;
 
 public class MazeGenerator : MazeComponent
 {
-    [Header("미로 생성 관련 설정 변수")]
+    [Header("미로 생성 정보")]
     [SerializeField] int maxRunwayLength = 4;
 
     [Header("미로 생성 프리팹")]
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject stairPrefab;
-    [SerializeField] GameObject straightPrefab;
+    
+
+    [Header("함정 생성 정보")]
+    [SerializeField] int trapAmount = 20;
+
+    [Header("함정 생성 프리팹")]
+    [SerializeField] GameObject tempContinuePrefab;
+    [SerializeField] GameObject tempTrapPrefab;
+    [SerializeField] Material redMat;
 
     bool[,,] visited;
+    
+
     public GameObject[,,] cellObjects; // [x, stage, z]
     public GameObject[,,,] wallObjects; // [x, stage, z, direction]  
-    public GameObject[,,] straightObjects;
     GameObject[] stageObjects;
     GameObject[] stairObjects;
+    GameObject[,] trapObjects;
+    GameObject[,,] continueObjects;
 
     Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
 
@@ -30,7 +41,7 @@ public class MazeGenerator : MazeComponent
         visited = new bool[mazeWidth, mazeHeight, stageLength];
         cellObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
         wallObjects = new GameObject[mazeWidth, stageLength, mazeHeight, (int)DIRECTION.MAX];
-        straightObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
+        continueObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
 
         GenerateMaze();
     }
@@ -43,6 +54,7 @@ public class MazeGenerator : MazeComponent
             DFS(0, 0, i);
             DetermineExit(i);
         }
+        //InitializeTrap();
     }
 
     void InitializeMaze()
@@ -81,7 +93,7 @@ public class MazeGenerator : MazeComponent
             {
                 // 벽 제거
                 RemoveWall(x, z, newX, newZ, stage);
-
+                
                 // 새 위치에서 미로 생성
                 DFS(newX, newZ, stage, nextCell, distance + 1, runwayLengthX, runwayLengthZ);
             }
@@ -90,49 +102,12 @@ public class MazeGenerator : MazeComponent
             {
                 prevLengthX = 0;
                 prevLengthZ = 0;
+                
                 continue;
             }          
         }
     }
 
-<<<<<<< HEAD
-=======
-    void CreateStraightObjects(int i)
-    {
-        for (int x = 0; x < mazeWidth; x++)
-        {
-            for (int z = 0; z < mazeHeight; z++)
-            {
-                if (IsStraightPath(x, z, i))
-                {
-                    straightObjects[x, i, z] = Instantiate
-                    (
-                        straightPrefab,
-                        transform.TransformDirection(new Vector3(x, i, z)),
-                        Quaternion.identity,
-                        cellObjects[x, i, z].transform
-                    );
-                    straightObjects[x, i, z].name = $"Stage {i+1} StraightObject ({x}, {z})";
-                }
-            }
-        }
-    }
-
-    bool IsStraightPath(int x, int z, int stage)
-    {
-        if (IsInRange(x, z)) return false;
-
-        int accessibleDirection = 0;
-
-        if (!visited[x, z + 1, stage]) accessibleDirection++;
-        if (!visited[x, z - 1, stage]) accessibleDirection++;
-        if (!visited[x + 1, z, stage]) accessibleDirection++;
-        if (!visited[x - 1, z, stage]) accessibleDirection++;
-
-        return accessibleDirection == 1;
-    }
-
->>>>>>> 92e1d181b927599db03bad2b9c2613a1fb2fdf93
     void DetermineExit(int stage)
     {
         // 가장 먼 거리 찾기
@@ -152,7 +127,7 @@ public class MazeGenerator : MazeComponent
             stairObjects[stage] = Instantiate
             (
                 stairPrefab,
-                transform.TransformDirection(cellObjects[exitCell.x, exitCell.y, exitCell.z].transform.position + new Vector3(0, stage + stairHeight, 0)),
+                transform.TransformDirection(cellObjects[exitCell.x, exitCell.y, exitCell.z].transform.position + new Vector3(0, stairHeight, 0)),
                 StairDirection(exitCell.x, exitCell.y, exitCell.z)
             );
             stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCell.x}, {exitCell.z})";
@@ -163,6 +138,31 @@ public class MazeGenerator : MazeComponent
             return;
         }
         
+    }
+
+    
+
+    void CheckContinuous(int stage)
+    {
+        // 1. 첫번째 지점에서 4방향에 벽이 존재하는지 검사
+        // 2. 벽이 존재하지 않으면 존재하지 않는 방향의 다음 지점에 빈 오브젝트 생성
+        // 3. 다음 지점에서 2번 과정을 실행하여 연속된 방향이 아니면 오브젝트 제거, 방향이 같으면 다음 지점에 오브젝트 생성
+        for(int x = 0; x < mazeWidth; x++)
+        {
+            for (int z = 0; z < mazeHeight; z++)
+            {
+                for (int d = 0; d < (int)DIRECTION.MAX; d++)
+                {
+                    if (wallObjects[x, stage, z, d].activeSelf == false)
+                    {
+                        if (d == (int)DIRECTION.NORTH)
+                        {
+                            continueObjects[x, stage, z + 1] = Instantiate(tempContinuePrefab, cellObjects[x, stage, z+1].transform.position,Quaternion.identity);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Quaternion StairDirection(int x, int stage, int z)
@@ -292,5 +292,30 @@ public class MazeGenerator : MazeComponent
             wallObjects[x, stage, z, i].transform.parent = cellObjects[x, stage, z].transform;
             wallObjects[x, stage, z, i].tag = "Wall";
         }      
+    }
+
+    void InitializeTrap()
+    {
+        for (int i = 0; i < stageLength; i++)
+        {
+            for (int j = 0; j < trapAmount; j++)
+            {
+                CreateTempTrap(j, i);
+            }
+        }
+    }
+
+    void CreateTempTrap(int trapNum, int stage)
+    {
+        int x = Random.Range(0, mazeWidth);
+        int z = Random.Range(0, mazeHeight);
+
+        trapObjects[trapNum, stage] = Instantiate
+        (
+            tempTrapPrefab,
+            cellObjects[x, stage, z].transform.position,
+            Quaternion.identity
+        );
+        trapObjects[trapNum, stage].transform.parent = cellObjects[x, stage, z].transform;
     }
 }
