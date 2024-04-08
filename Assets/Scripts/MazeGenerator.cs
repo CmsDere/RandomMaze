@@ -33,6 +33,7 @@ public class MazeGenerator : MazeComponent
     GameObject[,,] continueObjects;
 
     Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
+    List<(Vector3Int start, Vector3Int end, string direction)> runways = new List<(Vector3Int start, Vector3Int end, string direction)>();
 
     void Start()
     {
@@ -53,8 +54,11 @@ public class MazeGenerator : MazeComponent
         {
             DFS(0, 0, i);
             DetermineExit(i);
+            FindRunway(wallObjects, i);
+            //VisualizeRunways(i);
+            DebugRunways(i);
         }
-        //InitializeTrap();
+        
     }
 
     void InitializeMaze()
@@ -140,28 +144,72 @@ public class MazeGenerator : MazeComponent
         
     }
 
-    
-
-    void CheckContinuous(int stage)
-    {
-        // 1. 첫번째 지점에서 4방향에 벽이 존재하는지 검사
-        // 2. 벽이 존재하지 않으면 존재하지 않는 방향의 다음 지점에 빈 오브젝트 생성
-        // 3. 다음 지점에서 2번 과정을 실행하여 연속된 방향이 아니면 오브젝트 제거, 방향이 같으면 다음 지점에 오브젝트 생성
-        for(int x = 0; x < mazeWidth; x++)
+    void FindRunway(GameObject[,,,] wallDatas, int s)
+    {       
+        for (int x = 0; x < mazeWidth; x++)
         {
             for (int z = 0; z < mazeHeight; z++)
             {
-                for (int d = 0; d < (int)DIRECTION.MAX; d++)
+                if (!visited[x, z, s]) continue;
+
+                if (wallDatas[x, s, z, (int)DIRECTION.WEST].activeSelf == false)
                 {
-                    if (wallObjects[x, stage, z, d].activeSelf == false)
+                    Vector3Int start = new Vector3Int(x, s, z);
+                    Vector3Int end = start;
+
+                    while (end.x + 1 < mazeWidth && wallDatas[end.x + 1, end.y, end.z, (int)DIRECTION.WEST].activeSelf == false)
                     {
-                        if (d == (int)DIRECTION.NORTH)
-                        {
-                            continueObjects[x, stage, z + 1] = Instantiate(tempContinuePrefab, cellObjects[x, stage, z+1].transform.position,Quaternion.identity);
-                        }
+                        end.x++;
+                    }
+
+                    if (end != start)
+                    {
+                        runways.Add((start, end, "Horizontal"));
+                    }
+                }
+
+                if (wallDatas[x, s, z, (int)DIRECTION.NORTH].activeSelf == false)
+                {
+                    Vector3Int start = new Vector3Int(x, s, z);
+                    Vector3Int end = start;
+
+                    while (end.z + 1 < mazeHeight && wallDatas[end.x, end.y, end.z + 1, (int)DIRECTION.NORTH].activeSelf == false)
+                    {
+                        end.z++;
+                    }
+
+                    if (end != start)
+                    {
+                        runways.Add((start, end, "Vertical"));
                     }
                 }
             }
+        }
+    }
+
+    /*void VisualizeRunways(int stage)
+    {
+        foreach(var runway in runways)
+        {
+            Vector3 runwayStartPosition = new Vector3(runway.start.x, runway.start.y, runway.start.z);
+            Vector3 runwayEndPosition = new Vector3(runway.end.x, runway.end.y, runway.end.z);
+            Vector3 runwayPosition = (runwayStartPosition + runwayEndPosition) / 2;
+
+            GameObject tempObject = Instantiate(tempTrapPrefab, transform.TransformDirection(runwayPosition), Quaternion.identity);
+            tempObject.transform.parent = stageObjects[stage].transform;
+            tempObject.name = $"Stage {stage+1} TempTrap ({runwayStartPosition}, {runwayEndPosition})";
+        }
+    }*/
+
+    void DebugRunways(int stage)
+    {
+        int index = 0;
+        foreach(var runway in runways)
+        {
+            Vector3 runwayStartPosition = new Vector3(runway.start.x, runway.start.y, runway.start.z);
+            Vector3 runwayEndPosition = new Vector3(runway.end.x, runway.end.y, runway.end.z);
+
+            Debug.Log($"Stage: {stage+1}, Runway: {index++}, Start: {runwayStartPosition}, End: {runwayEndPosition}");
         }
     }
 
