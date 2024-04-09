@@ -54,11 +54,11 @@ public class MazeGenerator : MazeComponent
         {
             DFS(0, 0, i);
             DetermineExit(i);
-            FindRunway(wallObjects, i);
+            
             //VisualizeRunways(i);
-            DebugRunways(i);
+            
         }
-        
+        CreateTrapInfo();
     }
 
     void InitializeMaze()
@@ -144,73 +144,83 @@ public class MazeGenerator : MazeComponent
         
     }
 
-    void FindRunway(GameObject[,,,] wallDatas, int s)
+    void FindRunway(GameObject[,,,] wallDatas)
     {       
-        for (int x = 0; x < mazeWidth; x++)
+        for(int s = 0; s < stageLength; s++)
         {
-            for (int z = 0; z < mazeHeight; z++)
+            for (int x = 0; x < mazeWidth; x++)
             {
-                if (!visited[x, z, s]) continue;
-
-                if (wallDatas[x, s, z, (int)DIRECTION.WEST].activeSelf == false)
+                for (int z = 0; z < mazeHeight; z++)
                 {
-                    Vector3Int start = new Vector3Int(x, s, z);
-                    Vector3Int end = start;
+                    if (!visited[x, z, s]) continue;
 
-                    while (end.x + 1 < mazeWidth && wallDatas[end.x + 1, end.y, end.z, (int)DIRECTION.WEST].activeSelf == false)
+                    if (wallDatas[x, s, z, (int)DIRECTION.EAST].activeSelf == false)
                     {
-                        end.x++;
+                        Vector3Int start = new Vector3Int(x, s, z);
+                        Vector3Int end = start;
+
+                        while (end.x + 1 < mazeWidth && 
+                            wallDatas[end.x + 1, end.y, end.z, (int)DIRECTION.WEST].activeSelf == false)
+                        {
+                            end.x++;
+                        }
+
+                        if (end != start)
+                        {
+                            runways.Add((start, end, "Horizontal"));
+                        }
                     }
 
-                    if (end != start)
+                    if (wallDatas[x, s, z, (int)DIRECTION.NORTH].activeSelf == false)
                     {
-                        runways.Add((start, end, "Horizontal"));
-                    }
-                }
+                        Vector3Int start = new Vector3Int(x, s, z);
+                        Vector3Int end = start;
 
-                if (wallDatas[x, s, z, (int)DIRECTION.NORTH].activeSelf == false)
-                {
-                    Vector3Int start = new Vector3Int(x, s, z);
-                    Vector3Int end = start;
+                        while (end.z + 1 < mazeHeight &&
+                            wallDatas[end.x, end.y, end.z + 1, (int)DIRECTION.SOUTH].activeSelf == false)
+                        {
+                            end.z++;
+                        }
 
-                    while (end.z + 1 < mazeHeight && wallDatas[end.x, end.y, end.z + 1, (int)DIRECTION.NORTH].activeSelf == false)
-                    {
-                        end.z++;
-                    }
-
-                    if (end != start)
-                    {
-                        runways.Add((start, end, "Vertical"));
+                        if (end != start)
+                        {
+                            runways.Add((start, end, "Vertical"));
+                        }
                     }
                 }
             }
         }
     }
 
-    /*void VisualizeRunways(int stage)
+    void CalcStoneTrapRunway()
+    {
+        for (int i = 0; i < runways.Count; i++)
+        {
+            if ((runways[i].end.x - runways[i].start.x < 4 && runways[i].end.z - runways[i].start.z == 0) ||
+                (runways[i].end.x - runways[i].start.x == 0 && runways[i].end.z - runways[i].start.z < 4))
+            {
+                runways.RemoveAt(i);
+            }
+        }
+    }
+
+    void DebugStoneTrapInfo()
     {
         foreach(var runway in runways)
         {
-            Vector3 runwayStartPosition = new Vector3(runway.start.x, runway.start.y, runway.start.z);
-            Vector3 runwayEndPosition = new Vector3(runway.end.x, runway.end.y, runway.end.z);
-            Vector3 runwayPosition = (runwayStartPosition + runwayEndPosition) / 2;
+            Vector3Int startPos = runway.start;
+            Vector3Int endPos = runway.end;
 
-            GameObject tempObject = Instantiate(tempTrapPrefab, transform.TransformDirection(runwayPosition), Quaternion.identity);
-            tempObject.transform.parent = stageObjects[stage].transform;
-            tempObject.name = $"Stage {stage+1} TempTrap ({runwayStartPosition}, {runwayEndPosition})";
+            Debug.Log($"Available Stone Runway, Start: {startPos}, End: {endPos}");
         }
-    }*/
+    }
 
-    void DebugRunways(int stage)
+    void CreateTrapInfo()
     {
-        int index = 0;
-        foreach(var runway in runways)
-        {
-            Vector3 runwayStartPosition = new Vector3(runway.start.x, runway.start.y, runway.start.z);
-            Vector3 runwayEndPosition = new Vector3(runway.end.x, runway.end.y, runway.end.z);
-
-            Debug.Log($"Stage: {stage+1}, Runway: {index++}, Start: {runwayStartPosition}, End: {runwayEndPosition}");
-        }
+        // Trap »ý¼ººÎ
+        FindRunway(wallObjects);
+        CalcStoneTrapRunway();
+        DebugStoneTrapInfo();
     }
 
     Quaternion StairDirection(int x, int stage, int z)
@@ -340,30 +350,5 @@ public class MazeGenerator : MazeComponent
             wallObjects[x, stage, z, i].transform.parent = cellObjects[x, stage, z].transform;
             wallObjects[x, stage, z, i].tag = "Wall";
         }      
-    }
-
-    void InitializeTrap()
-    {
-        for (int i = 0; i < stageLength; i++)
-        {
-            for (int j = 0; j < trapAmount; j++)
-            {
-                CreateTempTrap(j, i);
-            }
-        }
-    }
-
-    void CreateTempTrap(int trapNum, int stage)
-    {
-        int x = Random.Range(0, mazeWidth);
-        int z = Random.Range(0, mazeHeight);
-
-        trapObjects[trapNum, stage] = Instantiate
-        (
-            tempTrapPrefab,
-            cellObjects[x, stage, z].transform.position,
-            Quaternion.identity
-        );
-        trapObjects[trapNum, stage].transform.parent = cellObjects[x, stage, z].transform;
     }
 }
