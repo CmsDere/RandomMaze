@@ -16,6 +16,7 @@ public class MazeGenerator : MazeComponent
 
     [Header("함정 생성 정보")]
     [SerializeField] int trapAmount = 20;
+    [SerializeField] int stoneTrapRange = 4;
 
     [Header("함정 생성 프리팹")]
     [SerializeField] GameObject tempContinuePrefab;
@@ -23,17 +24,17 @@ public class MazeGenerator : MazeComponent
     [SerializeField] Material redMat;
 
     bool[,,] visited;
-    
 
-    public GameObject[,,] cellObjects; // [x, stage, z]
-    public GameObject[,,,] wallObjects; // [x, stage, z, direction]  
+    GameObject[,,] cellObjects; // [x, stage, z]
+    GameObject[,,,] wallObjects; // [x, stage, z, direction]  
     GameObject[] stageObjects;
     GameObject[] stairObjects;
     GameObject[,] trapObjects;
     GameObject[,,] continueObjects;
 
     Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
-    List<(Vector3Int start, Vector3Int end, string direction)> runways = new List<(Vector3Int start, Vector3Int end, string direction)>();
+    List<(Vector3Int start, Vector3Int end, string direction)> runways =
+        new List<(Vector3Int start, Vector3Int end, string direction)>();
 
     void Start()
     {
@@ -54,11 +55,10 @@ public class MazeGenerator : MazeComponent
         {
             DFS(0, 0, i);
             DetermineExit(i);
-            
+
             //VisualizeRunways(i);
-            
-        }
-        CreateTrapInfo();
+            CreateTrapInfo();
+        }       
     }
 
     void InitializeMaze()
@@ -112,41 +112,17 @@ public class MazeGenerator : MazeComponent
         }
     }
 
-    void DetermineExit(int stage)
+    void CreateTrapInfo()
     {
-        // 가장 먼 거리 찾기
-        int maxDistance = distanceMap.Values.Max();
-        // 해당 거리에 있는 셀 중 하나를 출구로 선택
-        Vector3Int exitCell = distanceMap.FirstOrDefault(x => x.Value == maxDistance).Key;
-        // 출구로 지정
-        SetAsExit(exitCell, stage);
-    }
-
-    void SetAsExit(Vector3Int exitCell, int stage)
-    {
-        float stairHeight = stairPrefab.transform.lossyScale.y / 2;
-        
-        if (stage < stageLength - 1)
-        {
-            stairObjects[stage] = Instantiate
-            (
-                stairPrefab,
-                transform.TransformDirection(cellObjects[exitCell.x, exitCell.y, exitCell.z].transform.position + new Vector3(0, stairHeight, 0)),
-                StairDirection(exitCell.x, exitCell.y, exitCell.z)
-            );
-            stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCell.x}, {exitCell.z})";
-            stairObjects[stage].transform.parent = stageObjects[stage].transform;
-        }
-        else
-        {
-            return;
-        }
-        
+        // Trap 생성부
+        FindRunway(wallObjects);
+        CalcStoneTrapRunway();
+        DebugStoneTrapInfo();
     }
 
     void FindRunway(GameObject[,,,] wallDatas)
-    {       
-        for(int s = 0; s < stageLength; s++)
+    {
+        for (int s = 0; s < stageLength; s++)
         {
             for (int x = 0; x < mazeWidth; x++)
             {
@@ -159,7 +135,7 @@ public class MazeGenerator : MazeComponent
                         Vector3Int start = new Vector3Int(x, s, z);
                         Vector3Int end = start;
 
-                        while (end.x + 1 < mazeWidth && 
+                        while (end.x + 1 < mazeWidth &&
                             wallDatas[end.x + 1, end.y, end.z, (int)DIRECTION.WEST].activeSelf == false)
                         {
                             end.x++;
@@ -196,17 +172,46 @@ public class MazeGenerator : MazeComponent
     {
         for (int i = 0; i < runways.Count; i++)
         {
-            if ((runways[i].end.x - runways[i].start.x < 4 && runways[i].end.z - runways[i].start.z == 0) ||
-                (runways[i].end.x - runways[i].start.x == 0 && runways[i].end.z - runways[i].start.z < 4))
+            if (runways[i].direction == "Vertical")
             {
-                runways.RemoveAt(i);
+                if (runways[i].start.z == 0)
+                {
+                    if (runways[i].end.z - runways[i].start.z < stoneTrapRange - 2)
+                    {
+                        runways.RemoveAt(i);
+                    }
+                }
+                else
+                {
+                    if (runways[i].end.z - runways[i].start.z < stoneTrapRange)
+                    {
+                        runways.RemoveAt(i);
+                    }
+                }
+            }
+            if (runways[i].direction == "Horizontal")
+            {
+                if (runways[i].start.x == 0)
+                {
+                    if (runways[i].end.x - runways[i].start.x < stoneTrapRange - 2)
+                    {
+                        runways.RemoveAt(i);
+                    }
+                }
+                else
+                {
+                    if (runways[i].end.x - runways[i].start.x < stoneTrapRange)
+                    {
+                        runways.RemoveAt(i);
+                    }
+                }
             }
         }
     }
 
     void DebugStoneTrapInfo()
     {
-        foreach(var runway in runways)
+        foreach (var runway in runways)
         {
             Vector3Int startPos = runway.start;
             Vector3Int endPos = runway.end;
@@ -215,12 +220,36 @@ public class MazeGenerator : MazeComponent
         }
     }
 
-    void CreateTrapInfo()
+    void DetermineExit(int stage)
     {
-        // Trap 생성부
-        FindRunway(wallObjects);
-        CalcStoneTrapRunway();
-        DebugStoneTrapInfo();
+        // 가장 먼 거리 찾기
+        int maxDistance = distanceMap.Values.Max();
+        // 해당 거리에 있는 셀 중 하나를 출구로 선택
+        Vector3Int exitCell = distanceMap.FirstOrDefault(x => x.Value == maxDistance).Key;
+        // 출구로 지정
+        SetAsExit(exitCell, stage);
+    }
+
+    void SetAsExit(Vector3Int exitCell, int stage)
+    {
+        float stairHeight = stairPrefab.transform.lossyScale.y / 2;
+        
+        if (stage < stageLength - 1)
+        {
+            stairObjects[stage] = Instantiate
+            (
+                stairPrefab,
+                transform.TransformDirection(cellObjects[exitCell.x, exitCell.y, exitCell.z].transform.position + new Vector3(0, stairHeight, 0)),
+                StairDirection(exitCell.x, exitCell.y, exitCell.z)
+            );
+            stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCell.x}, {exitCell.z})";
+            stairObjects[stage].transform.parent = stageObjects[stage].transform;
+        }
+        else
+        {
+            return;
+        }
+        
     }
 
     Quaternion StairDirection(int x, int stage, int z)
@@ -350,5 +379,15 @@ public class MazeGenerator : MazeComponent
             wallObjects[x, stage, z, i].transform.parent = cellObjects[x, stage, z].transform;
             wallObjects[x, stage, z, i].tag = "Wall";
         }      
+    }
+
+    public bool[,,] GetVisited()
+    {
+        return visited;
+    }
+
+    public GameObject[,,,] GetWallObjects()
+    {
+        return wallObjects;
     }
 }

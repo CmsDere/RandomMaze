@@ -390,6 +390,7 @@ MonoBehaviour:
   wallPrefab: {fileID: 5184235650078627104, guid: 969758f0d3e4a294ebb7e519cf2c81db, type: 3}
   stairPrefab: {fileID: 2934020102608372880, guid: e3078b106f997f946975c0b1165c2a6b, type: 3}
   trapAmount: 20
+  stoneTrapRange: 4
   tempContinuePrefab: {fileID: 4427172814665295894, guid: a95d5ff8e3e05e442815097751efc9a7, type: 3}
   tempTrapPrefab: {fileID: 7604894142311265108, guid: b9eb0c2042c1c2a44b967138a43756bb, type: 3}
   redMat: {fileID: 2100000, guid: 8ed1a1c383cea7244af566523493465a, type: 2}

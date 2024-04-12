@@ -15,7 +15,7 @@ public class ArrowTrap : MonoBehaviour
 
     void Start()
     {
-        wallObjects = GetComponent<MazeGenerator>().wallObjects;
+        //wallObjects = GetComponent<MazeGenerator>().wallObjects;
         arrowObjects = new GameObject[arrowCount];
     }
 
