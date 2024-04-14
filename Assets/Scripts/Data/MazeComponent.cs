@@ -2,16 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DIRECTION
-{
-    NONE = -1,
-    NORTH,
-    SOUTH,
-    WEST,
-    EAST,
-    MAX
-}
-
 public enum TRAP_TYPE
 {
     NONE = -1,
