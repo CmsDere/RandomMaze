@@ -30,7 +30,7 @@ public class MazeGenerator : MonoBehaviour
         wallInfo = mapManager.GetComponent<MapManager>().wallInfo;
     }
 
-    void GenerateMaze()
+    public void GenerateMaze()
     {
         for (int y = 0; y < stageLength; y++)
         {

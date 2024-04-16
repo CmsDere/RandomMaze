@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static GameManager i;
+    public bool isMapInfoCreate { get; private set; }
+    public bool isMazeGenerate { get; private set; }
+
+    void Awake()
     {
-        
+        i = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-        
+        MapInfoCreate();
+    }
+
+    void MapInfoCreate()
+    {
+        isMapInfoCreate = true;
+        GameObject.Find("MapManager").GetComponent<MapManager>().GenerateInfo();
+    }
+
+    void MazeCreate()
+    {
+        isMazeGenerate = true;
     }
 }

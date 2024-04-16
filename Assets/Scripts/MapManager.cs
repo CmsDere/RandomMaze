@@ -33,10 +33,17 @@ public class MapManager : MonoBehaviour
 
     public void GenerateInfo()
     {
-        InitializeInfo();
-        for (int y = 0; y < stageLength; y++)
+        if (GameManager.i.isMapInfoCreate)
         {
-            DFS(0, y, 0);
+            InitializeInfo();
+            for (int y = 0; y < stageLength; y++)
+            {
+                DFS(0, y, 0);
+            }
+        }
+        else
+        {
+            return;
         }
     }
 
