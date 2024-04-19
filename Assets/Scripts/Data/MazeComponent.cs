@@ -12,6 +12,15 @@ public enum TRAP_TYPE
     MAX
 }
 
+public enum DIRECTION
+{
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST,
+    MAX
+}
+
 public class MazeComponent : MonoBehaviour
 {
     [Header("미로 생성 관련 중요 변수")]
