@@ -24,7 +24,8 @@ public class MazeInformation : MazeComponent
                 {
                     for (int d = 0; d < (int)DIRECTION.MAX; d++)
                     {
-                        Debug.Log($"WallInfo[{x}, {y}, {z}, {(DIRECTION)d}] = {wallInfo[x, y, z, d]}");
+                        if (wallInfo[x, y, z, d])
+                            Debug.Log($"WallInfo[{x}, {y}, {z}, {d}] = {wallInfo[x, y, z, d]}");
                     }
                 }
             }

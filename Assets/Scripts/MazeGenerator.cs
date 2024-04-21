@@ -114,14 +114,14 @@ public class MazeGenerator : MazeComponent
 
     void SendMazeInfo(int x, int z, int stage)
     {
-        if (cellObjects[x, stage, z].activeSelf == true)
+        if (cellObjects[x, stage, z].activeInHierarchy == true)
             mazeInfo.cellInfo[x, stage, z] = true;
         else
             mazeInfo.cellInfo[x, stage, z] = false;
 
         for (int d = 0; d < (int)DIRECTION.MAX; d++)
         {
-            if (wallObjects[x, stage, z, d].activeSelf == true)
+            if (wallObjects[x, stage, z, d].activeInHierarchy == true)
                 mazeInfo.wallInfo[x, stage, z, d] = true;
             else
                 mazeInfo.wallInfo[x, stage, z, d] = false;
