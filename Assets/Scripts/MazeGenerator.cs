@@ -10,10 +10,7 @@ public class MazeGenerator : MazeComponent
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject stairPrefab;
 
-    [Header("함정 생성 정보")]
-    [SerializeField] int trapAmount = 20;
-    [SerializeField] int stoneTrapRange = 4;
-    [SerializeField] int maxRunwayLength = 4;
+    
 
     [Header("함정 생성 프리팹")]
     [SerializeField] GameObject tempContinuePrefab;
@@ -47,7 +44,7 @@ public class MazeGenerator : MazeComponent
         mazeInfo = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();
 
         GenerateMaze();
-        mazeInfo.DebugInfo();
+        mazeInfo.CreateStoneTrapInfo();
     }
 
     void GenerateMaze()
@@ -57,6 +54,7 @@ public class MazeGenerator : MazeComponent
         {
             DFS(0, 0, i);
             DetermineExit(i);
+            SendMazeInfo(i);
         }
     }
 
@@ -71,7 +69,6 @@ public class MazeGenerator : MazeComponent
                 for (int z = 0; z < mazeHeight; z++)
                 {
                     CreateCell(x, z, i);
-                    SendMazeInfo(x, z, i);
                 }
             }
         }
@@ -112,20 +109,27 @@ public class MazeGenerator : MazeComponent
         }
     }
 
-    void SendMazeInfo(int x, int z, int stage)
+    void SendMazeInfo(int stage)
     {
-        if (cellObjects[x, stage, z].activeInHierarchy == true)
-            mazeInfo.cellInfo[x, stage, z] = true;
-        else
-            mazeInfo.cellInfo[x, stage, z] = false;
-
-        for (int d = 0; d < (int)DIRECTION.MAX; d++)
+        for (int x = 0; x < mazeWidth; x++)
         {
-            if (wallObjects[x, stage, z, d].activeInHierarchy == true)
-                mazeInfo.wallInfo[x, stage, z, d] = true;
-            else
-                mazeInfo.wallInfo[x, stage, z, d] = false;
+            for (int z = 0; z < mazeHeight; z++)
+            {
+                if (cellObjects[x, stage, z].activeSelf == true)
+                    mazeInfo.cellInfo[x, stage, z] = true;
+                else
+                    mazeInfo.cellInfo[x, stage, z] = false;
+
+                for (int d = 0; d < (int)DIRECTION.MAX; d++)
+                {
+                    if (wallObjects[x, stage, z, d].activeSelf == true)
+                        mazeInfo.wallInfo[x, stage, z, d] = true;
+                    else
+                        mazeInfo.wallInfo[x, stage, z, d] = false;
+                }
+            }
         }
+        
     }
 
     void CreateTrapInfo()

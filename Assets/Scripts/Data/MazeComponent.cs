@@ -28,6 +28,11 @@ public class MazeComponent : MonoBehaviour
     [SerializeField] protected int mazeHeight = 20; 
     [SerializeField] protected int stageLength = 3;
 
+    [Header("함정 생성 정보")]
+    [SerializeField] protected int trapAmount = 20;
+    [SerializeField] protected int stoneTrapRange = 4;
+    [SerializeField] protected int maxRunwayLength = 4;
+
     protected bool IsInRange(int x, int z)
     {
         return x >= 0 && z >= 0 && x < mazeWidth && z < mazeHeight;
