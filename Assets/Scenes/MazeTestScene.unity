@@ -264,6 +264,9 @@ MonoBehaviour:
   mazeWidth: 20
   mazeHeight: 20
   stageLength: 3
+  trapAmount: 20
+  stoneTrapRange: 4
+  maxRunwayLength: 4
 --- !u!1 &1276965114
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,18 +308,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1276965114}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9add95bd1228a234a83314ed8498c22a, type: 3}
+  m_Script: {fileID: 11500000, guid: df666a105915866459d4bfb2640c0002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mazeWidth: 20
   mazeHeight: 20
   stageLength: 3
-  cellPrefab: {fileID: 2742344623750909142, guid: 390fd95b3222d9341be3bd105e4562d6, type: 3}
-  wallPrefab: {fileID: 5184235650078627104, guid: 969758f0d3e4a294ebb7e519cf2c81db, type: 3}
-  stairPrefab: {fileID: 2934020102608372880, guid: e3078b106f997f946975c0b1165c2a6b, type: 3}
   trapAmount: 20
   stoneTrapRange: 4
   maxRunwayLength: 4
+  cellPrefab: {fileID: 2742344623750909142, guid: 390fd95b3222d9341be3bd105e4562d6, type: 3}
+  wallPrefab: {fileID: 5184235650078627104, guid: 969758f0d3e4a294ebb7e519cf2c81db, type: 3}
+  stairPrefab: {fileID: 2934020102608372880, guid: e3078b106f997f946975c0b1165c2a6b, type: 3}
   tempContinuePrefab: {fileID: 7604894142311265108, guid: b9eb0c2042c1c2a44b967138a43756bb, type: 3}
   tempTrapPrefab: {fileID: 7604894142311265108, guid: b9eb0c2042c1c2a44b967138a43756bb, type: 3}
   redMat: {fileID: 2100000, guid: 8ed1a1c383cea7244af566523493465a, type: 2}
