@@ -33,6 +33,9 @@ public class MazeComponent : MonoBehaviour
     [SerializeField] protected int stoneTrapRange = 4;
     [SerializeField] protected int maxRunwayLength = 4;
 
+    [Header("함정 생성 개수")]
+    [SerializeField] protected int stoneTrapAmount = 10;
+
     protected bool IsInRange(int x, int z)
     {
         return x >= 0 && z >= 0 && x < mazeWidth && z < mazeHeight;

@@ -132,111 +132,6 @@ public class MazeGenerator : MazeComponent
         
     }
 
-    void CreateTrapInfo()
-    {
-        // Trap 생성부
-        FindRunway();
-        CalcStoneTrapRunway();
-        DebugStoneTrapInfo();
-    }
-
-    void FindRunway()
-    {
-        for (int s = 0; s < stageLength; s++)
-        {
-            for (int x = 0; x < mazeWidth; x++)
-            {
-                for (int z = 0; z < mazeHeight; z++)
-                {
-                    if (!visited[x, z, s]) continue;
-
-                    if (wallObjects[x, s, z, (int)DIRECTION.EAST].activeSelf == false)
-                    {
-                        Vector3Int start = new Vector3Int(x, s, z);
-                        Vector3Int end = start;
-
-                        while (end.x + 1 < mazeWidth &&
-                            wallObjects[end.x + 1, end.y, end.z, (int)DIRECTION.WEST].activeSelf == false)
-                        {
-                            end.x++;
-                        }
-
-                        if (end != start)
-                        {
-                            runways.Add((start, end, "Horizontal"));
-                        }
-                    }
-
-                    if (wallObjects[x, s, z, (int)DIRECTION.NORTH].activeSelf == false)
-                    {
-                        Vector3Int start = new Vector3Int(x, s, z);
-                        Vector3Int end = start;
-
-                        while (end.z + 1 < mazeHeight &&
-                            wallObjects[end.x, end.y, end.z + 1, (int)DIRECTION.SOUTH].activeSelf == false)
-                        {
-                            end.z++;
-                        }
-
-                        if (end != start)
-                        {
-                            runways.Add((start, end, "Vertical"));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    void CalcStoneTrapRunway()
-    {
-        Debug.Log(runways.Count);
-        for (int i = 0; i < runways.Count; i++)
-        {
-            Vector3Int start = runways[i].start;
-            Vector3Int end = runways[i].end;
-            string dir = runways[i].direction;
-
-            // vertical
-            if (dir == "Vertical")
-            {
-                if (start.x == 0)
-                {
-
-                }
-            }
-            
-
-            if (start.x == 0 || start.z == 0)
-            {
-                if (end.x - start.x < stoneTrapRange - 1 || end.z - start.z < stoneTrapRange - 1)
-                {
-                    runways.RemoveAt(i);
-                }
-            }
-            else
-            {
-                if (end.x - start.x <= stoneTrapRange - 2 || end.z - start.z <= stoneTrapRange - 2)
-                {
-                    runways.RemoveAt(i);
-                }
-            }
-            
-        }
-    }
-
-    void DebugStoneTrapInfo()
-    {
-        Debug.Log(runways.Count);
-        for (int i = 0; i < runways.Count; i++)
-        {
-            Vector3Int startPos = runways[i].start;
-            Vector3Int endPos = runways[i].end;
-
-            Debug.Log($"Available Stone Runway{i}, Start: {startPos}, End: {endPos}, Direction: {runways[i].direction}");
-        }
-    }
-
     void DetermineExit(int stage)
     {
         // 가장 먼 거리 찾기
@@ -265,8 +160,7 @@ public class MazeGenerator : MazeComponent
         else
         {
             return;
-        }
-        
+        }  
     }
 
     Quaternion StairDirection(int x, int stage, int z)

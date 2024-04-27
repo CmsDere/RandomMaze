@@ -11,9 +11,8 @@ public class MazeInformation : MazeComponent
     bool[,,] stoneHorizontalVisited;
     bool[,,] stoneVerticalVisited;
 
-    int stoneTrapAmount = 0;
-
-    List<(Vector3Int start, Vector3Int end, string direction)> runways = new List<(Vector3Int start, Vector3Int end, string direction)>();
+    public List<(Vector3Int start, Vector3Int end, string direction)> runways { get; private set; } 
+        = new List<(Vector3Int start, Vector3Int end, string direction)>();
 
     void Awake()
     {
@@ -109,6 +108,5 @@ public class MazeInformation : MazeComponent
 
             Debug.Log($"Available Stone Trap {i}, Start: {start}, End: {end}, Direction: {direction}");
         }
-        stoneTrapAmount = runways.Count;
     }
 }
