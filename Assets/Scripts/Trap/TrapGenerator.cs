@@ -8,41 +8,75 @@ using UnityEngine;
 
 public class TrapGenerator : MazeComponent
 {
+    [SerializeField] GameObject stoneTrapPrefab;
+
     MazeInformation mI;
 
-    GameObject[,] stoneTrapObjects;
+    GameObject[] trapBaseObjects;
+    GameObject[] stoneTrapObjects;
     int availableStoneTrap;
     
     void Awake()
     {
-        stoneTrapAmount = 0;
+        stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
+        trapBaseObjects = new GameObject[(int)TRAP_TYPE.MAX];
+        mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();
     }
 
     void Start()
     {
-        availableStoneTrap = mI.runways.Count;
+
     }
 
     public void GenerateStoneTrap()
     {
-        for (int i = 0; i < stageLength; i++)
+        availableStoneTrap = mI.runways.Count;
+
+        for (int i = 0; i < stageLength * stoneTrapAmount; i++)
         {
-            for (int j = 0; j < stoneTrapAmount; j++)
-            {
-                int r = Random.Range(0, stageOfTrapAmount(i));
-            }
+            int r = Random.Range(0, availableStoneTrap);
+
+            CreateStoneTrap(r, i);
         }
     }
 
-    int stageOfTrapAmount(int stage)
+    void CreateStoneTrap(int runwayIndex, int stoneTrapIndex)
     {
-        int amount = mI.runways.Where(n => n.start.y == stage).Count();
+        Vector3 start = mI.runways[runwayIndex].start;
+        Vector3 end = mI.runways[runwayIndex].end;
+        string direction = mI.runways[runwayIndex].direction;
+        Vector3 center = (end + start) / 2;
 
-        return amount;
+        stoneTrapObjects[stoneTrapIndex] = Instantiate
+            (
+                stoneTrapPrefab,
+                transform.TransformDirection(new Vector3((end.x + start.x) / 2, end.y, (end.z + start.z) / 2)),
+                Quaternion.identity
+            );
+        BoxCollider box = stoneTrapObjects[stoneTrapIndex].GetComponent<BoxCollider>();
+
+        box.size = new Vector3(stoneTrapSizeX(end.x, start.x, direction), 1, stoneTrapSizeZ(end.z, start.z, direction));
+        stoneTrapObjects[stoneTrapIndex].name = $"StoneTrap {stoneTrapIndex}";
+        stoneTrapObjects[stoneTrapIndex].transform.parent = trapBaseObjects[(int)TRAP_TYPE.STONE_TRAP].transform;
+
+        Debug.Log($"TrapNum : {stoneTrapIndex}, Direction : {direction}, Start : {start}, End : {end}, Center : {center}");
     }
 
-    void CreateStoneTrap(int index)
+    void GenerateTrapBase()
     {
+        for (int i = 0; i < (int)TRAP_TYPE.MAX; i++)
+        {
+            trapBaseObjects[i] = new GameObject($"{(TRAP_TYPE)i}");
+        }
+    }
 
+    float stoneTrapSizeX(float end, float start, string direction)
+    {
+        return (direction == "Horizontal") ? (end - start + 1) : 1;
+    }
+
+    float stoneTrapSizeZ(float end, float start, string direction)
+    {
+        return (direction == "Horizontal") ? 1 : (end - start + 1);
     }
 }

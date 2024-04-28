@@ -4,7 +4,6 @@ using UnityEngine;
 
 public enum TRAP_TYPE
 {
-    NONE = -1,
     STONE_TRAP,
     ARROW_TRAP,
     SWAMP_TRAP,

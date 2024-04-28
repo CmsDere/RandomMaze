@@ -11,8 +11,9 @@ public class MazeInformation : MazeComponent
     bool[,,] stoneHorizontalVisited;
     bool[,,] stoneVerticalVisited;
 
-    public List<(Vector3Int start, Vector3Int end, string direction)> runways { get; private set; } 
-        = new List<(Vector3Int start, Vector3Int end, string direction)>();
+    public List<(Vector3 start, Vector3 end, string direction)> runways { get; private set; } 
+        = new List<(Vector3 start, Vector3 end, string direction)>();
+    public Vector3 mazeStartPos;
 
     void Awake()
     {
@@ -20,6 +21,7 @@ public class MazeInformation : MazeComponent
         wallInfo = new bool[mazeWidth, stageLength, mazeHeight, (int)DIRECTION.MAX];
         stoneHorizontalVisited = new bool[mazeWidth, mazeHeight, stageLength];
         stoneVerticalVisited = new bool[mazeWidth, mazeHeight, stageLength];
+        mazeStartPos = Vector3.zero;
     }
 
     public void CreateStoneTrapInfo()
@@ -30,7 +32,7 @@ public class MazeInformation : MazeComponent
             FindVerticalRunway(0, 0, i);
         }
         CalcStoneRunway();
-        DebugStoneRunway();
+        //DebugStoneRunway();
     }
 
     void FindHorizontalRunway(int x, int z, int stage, int distance = 0)
@@ -48,7 +50,7 @@ public class MazeInformation : MazeComponent
             }
             else
             {
-                runways.Add((new Vector3Int(x - distance, stage, z), new Vector3Int(x, stage, z), "Horizontal"));
+                runways.Add((new Vector3(x - distance, stage, z), new Vector3(x, stage, z), "Horizontal"));
                 FindHorizontalRunway(newX, newZ, stage);
             }
         }
@@ -69,7 +71,7 @@ public class MazeInformation : MazeComponent
             }
             else
             {
-                runways.Add((new Vector3Int(x, stage, z - distance), new Vector3Int(x, stage, z), "Vertical"));
+                runways.Add((new Vector3(x, stage, z - distance), new Vector3(x, stage, z), "Vertical"));
                 FindVerticalRunway(newX, newZ, stage);
             }
         }
@@ -79,8 +81,8 @@ public class MazeInformation : MazeComponent
     {
         for (int i = runways.Count - 1; i >= 0; i--)
         {
-            Vector3Int start = runways[i].start;
-            Vector3Int end = runways[i].end;
+            Vector3 start = runways[i].start;
+            Vector3 end = runways[i].end;
             if (runways[i].direction == "Horizontal")
             {
                 if (end.x - start.x < stoneTrapRange - 1)
@@ -102,8 +104,8 @@ public class MazeInformation : MazeComponent
     {
         for (int i = 0; i < runways.Count; i++)
         {
-            Vector3Int start = runways[i].start;
-            Vector3Int end = runways[i].end;
+            Vector3 start = runways[i].start;
+            Vector3 end = runways[i].end;
             string direction = runways[i].direction;
 
             Debug.Log($"Available Stone Trap {i}, Start: {start}, End: {end}, Direction: {direction}");

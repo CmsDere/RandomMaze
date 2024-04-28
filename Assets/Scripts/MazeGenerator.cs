@@ -10,13 +10,6 @@ public class MazeGenerator : MazeComponent
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject stairPrefab;
 
-    
-
-    [Header("함정 생성 프리팹")]
-    [SerializeField] GameObject tempContinuePrefab;
-    [SerializeField] GameObject tempTrapPrefab;
-    [SerializeField] Material redMat;
-
     bool[,,] visited;
 
     GameObject[,,] cellObjects; // [x, stage, z]
@@ -32,7 +25,7 @@ public class MazeGenerator : MazeComponent
     List<(Vector3Int start, Vector3Int end, string direction)> runways =
         new List<(Vector3Int start, Vector3Int end, string direction)>();
 
-    void Start()
+    void Awake()
     {
         stageObjects = new GameObject[stageLength];
         stairObjects = new GameObject[stageLength];
@@ -42,12 +35,9 @@ public class MazeGenerator : MazeComponent
         continueObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
 
         mazeInfo = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();
-
-        GenerateMaze();
-        mazeInfo.CreateStoneTrapInfo();
     }
 
-    void GenerateMaze()
+    public void GenerateMaze()
     {
         InitializeMaze();
         for (int i = 0; i < stageLength; i++)
