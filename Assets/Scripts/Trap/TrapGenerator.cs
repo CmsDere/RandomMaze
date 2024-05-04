@@ -15,17 +15,21 @@ public class TrapGenerator : MazeComponent
     GameObject[] trapBaseObjects;
     GameObject[] stoneTrapObjects;
     int availableStoneTrap;
-    
+
+    public float cellPosX { get; set; }
+    public float cellPosY { get; set; }
+    public float cellPosZ { get; set; }
+
     void Awake()
     {
         stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
         trapBaseObjects = new GameObject[(int)TRAP_TYPE.MAX];
-        mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();
+        mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();    
     }
 
     void Start()
     {
-
+        
     }
 
     public void GenerateStoneTrap()
@@ -58,15 +62,19 @@ public class TrapGenerator : MazeComponent
         box.size = new Vector3(stoneTrapSizeX(end.x, start.x, direction), 1, stoneTrapSizeZ(end.z, start.z, direction));
         stoneTrapObjects[stoneTrapIndex].name = $"StoneTrap {stoneTrapIndex}";
         stoneTrapObjects[stoneTrapIndex].transform.parent = trapBaseObjects[(int)TRAP_TYPE.STONE_TRAP].transform;
+        stoneTrapObjects[stoneTrapIndex].GetComponent<StoneTrap>().start = start;
+        stoneTrapObjects[stoneTrapIndex].GetComponent<StoneTrap>().end = end;
+        stoneTrapObjects[stoneTrapIndex].GetComponent<StoneTrap>().direction = direction;
 
-        Debug.Log($"TrapNum : {stoneTrapIndex}, Direction : {direction}, Start : {start}, End : {end}, Center : {center}");
+        //Debug.Log($"TrapNum : {stoneTrapIndex}, Direction : {direction}, Start : {start}, End : {end}, Center : {center}");
     }
 
-    void GenerateTrapBase()
+    public void GenerateTrapBase()
     {
         for (int i = 0; i < (int)TRAP_TYPE.MAX; i++)
         {
             trapBaseObjects[i] = new GameObject($"{(TRAP_TYPE)i}");
+            trapBaseObjects[i].transform.parent = this.transform;
         }
     }
 

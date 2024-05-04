@@ -66,4 +66,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c467ae51f8e31804092b6dc4f0c36566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stone: {fileID: 6977042277952322255, guid: 86e68a7eba21a1847bf61a2ade66034f, type: 3}
+  stonePrefab: {fileID: 6977042277952322255, guid: 86e68a7eba21a1847bf61a2ade66034f, type: 3}

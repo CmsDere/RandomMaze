@@ -6,16 +6,11 @@ public class CellTrigger : MonoBehaviour
 {
     public bool isCellTrigger { get; private set; }
 
+    TrapGenerator trapGen;
+
     void Start()
     {
         isCellTrigger = false;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isCellTrigger = true;
-        }
+        trapGen = GameObject.Find("TrapGenerator").GetComponent<TrapGenerator>();
     }
 }

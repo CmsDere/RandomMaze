@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     {
         mazeGen.GenerateMaze();
         mazeInfo.CreateStoneTrapInfo();
+        trapGen.GenerateTrapBase();
         trapGen.GenerateStoneTrap();
         playMan.GeneratePlayer();
     }

@@ -12,18 +12,14 @@ public class MazeGenerator : MazeComponent
 
     bool[,,] visited;
 
-    GameObject[,,] cellObjects; // [x, stage, z]
-    GameObject[,,,] wallObjects; // [x, stage, z, direction]  
+    public GameObject[,,] cellObjects { get; private set; }
+    public GameObject[,,,] wallObjects { get; private set; }
     GameObject[] stageObjects;
     GameObject[] stairObjects;
-    GameObject[,] trapObjects;
-    GameObject[,,] continueObjects;
 
     MazeInformation mazeInfo;
 
     Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
-    List<(Vector3Int start, Vector3Int end, string direction)> runways =
-        new List<(Vector3Int start, Vector3Int end, string direction)>();
 
     void Awake()
     {
@@ -32,7 +28,6 @@ public class MazeGenerator : MazeComponent
         visited = new bool[mazeWidth, mazeHeight, stageLength];
         cellObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
         wallObjects = new GameObject[mazeWidth, stageLength, mazeHeight, (int)DIRECTION.MAX];
-        continueObjects = new GameObject[mazeWidth, stageLength, mazeHeight];
 
         mazeInfo = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();
     }
@@ -44,6 +39,7 @@ public class MazeGenerator : MazeComponent
         {
             DFS(0, 0, i);
             DetermineExit(i);
+            MoveMaze(i);
             SendMazeInfo(i);
         }
     }
@@ -119,7 +115,6 @@ public class MazeGenerator : MazeComponent
                 }
             }
         }
-        
     }
 
     void DetermineExit(int stage)
@@ -280,5 +275,43 @@ public class MazeGenerator : MazeComponent
             wallObjects[x, stage, z, i].transform.parent = cellObjects[x, stage, z].transform;
             wallObjects[x, stage, z, i].tag = "Wall";
         }      
+    }
+
+    void MoveMaze(int stage)
+    {
+        if (stage == 0)
+        {
+            return;
+        }
+        else
+        {
+            stageObjects[stage].transform.position += stairObjects[stage].transform.position + stairRot(stage);
+        }
+    }
+
+    Vector3 stairRot(int stage)
+    {
+        Vector3 rot = Vector3.zero;
+        Quaternion stair = stairObjects[stage].transform.rotation;
+
+        if (stair == Quaternion.identity)
+        {
+            rot = new Vector3(0, 0, -1);
+        }
+        else if (stair == Quaternion.Euler(0, 180, 0))
+        {
+            rot = new Vector3(0, 0, 1);
+        }
+        else if (stair == Quaternion.Euler(0, 90, 0))
+        {
+            rot = new Vector3(-1, 0, 0);
+        }
+        else if (stair == Quaternion.Euler(0, -90, 0))
+        {
+            rot = new Vector3(1, 0, 0);
+        }
+        else return rot;
+
+        return rot;
     }
 }
