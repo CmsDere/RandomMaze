@@ -16,6 +16,8 @@ public class TrapGenerator : MazeComponent
     GameObject[] stoneTrapObjects;
     int availableStoneTrap;
 
+    List<int> randomRunwayIist = new List<int>();
+
     public float cellPosX { get; set; }
     public float cellPosY { get; set; }
     public float cellPosZ { get; set; }
@@ -27,11 +29,8 @@ public class TrapGenerator : MazeComponent
         mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();    
     }
 
-    void Start()
-    {
-        
-    }
-
+    // 함정 최종 생성==
+    // 돌 함정 최종 생성
     public void GenerateStoneTrap()
     {
         availableStoneTrap = mI.runways.Count;
@@ -39,11 +38,27 @@ public class TrapGenerator : MazeComponent
         for (int i = 0; i < stageLength * stoneTrapAmount; i++)
         {
             int r = Random.Range(0, availableStoneTrap);
+            randomRunwayIist.Add(r);
+            if (randomRunwayIist.Count != randomRunwayIist.Distinct().Count())
+            {
+                randomRunwayIist = randomRunwayIist.Distinct().ToList();
+            }
+        }
 
-            CreateStoneTrap(r, i);
+        for (int i = 0; i < randomRunwayIist.Count; i++)
+        {
+            CreateStoneTrap(randomRunwayIist[i], i);
         }
     }
 
+    // 화살 함정 최종 생성
+    public void GenerateArrowTrap()
+    {
+
+    }
+    //==
+
+    //돌 함정 생성 관련==
     void CreateStoneTrap(int runwayIndex, int stoneTrapIndex)
     {
         Vector3 start = mI.runways[runwayIndex].start;
@@ -87,4 +102,5 @@ public class TrapGenerator : MazeComponent
     {
         return (direction == "Horizontal") ? 1 : (end - start + 1);
     }
+    //==
 }

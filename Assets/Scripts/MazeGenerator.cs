@@ -285,31 +285,43 @@ public class MazeGenerator : MazeComponent
         }
         else
         {
-            stageObjects[stage].transform.position += stairObjects[stage].transform.position + stairRot(stage);
+            stageObjects[stage].transform.position += stairPos(stage) + stairRotToPos(stage);
+            stageObjects[stage].transform.rotation = stairRotToStageRot(stage);
         }
     }
 
-    Vector3 stairRot(int stage)
+    Quaternion stairRotToStageRot(int stage)
+    {
+        Quaternion result = Quaternion.identity;
+        Quaternion stair = stairObjects[stage - 1].transform.rotation;
+
+        if (stair == Quaternion.identity) result = Quaternion.identity;
+        else if (stair == Quaternion.Euler(0, 180, 0)) result = Quaternion.Euler(0, 180, 0);
+        else if (stair == Quaternion.Euler(0, 90, 0)) result = Quaternion.Euler(0, 90, 0);
+        else if (stair == Quaternion.Euler(0, -90, 0)) result = Quaternion.Euler(0, -90, 0);
+
+        return result;
+    }
+
+    Vector3 stairPos(int stage)
+    {
+        Vector3 pos = Vector3.zero;
+        Vector3 stair = stairObjects[stage - 1].transform.position;
+
+        pos = new Vector3(stair.x, 0, stair.z);
+
+        return pos;
+    }
+
+    Vector3 stairRotToPos(int stage)
     {
         Vector3 rot = Vector3.zero;
-        Quaternion stair = stairObjects[stage].transform.rotation;
+        Quaternion stair = stairObjects[stage - 1].transform.rotation;
 
-        if (stair == Quaternion.identity)
-        {
-            rot = new Vector3(0, 0, -1);
-        }
-        else if (stair == Quaternion.Euler(0, 180, 0))
-        {
-            rot = new Vector3(0, 0, 1);
-        }
-        else if (stair == Quaternion.Euler(0, 90, 0))
-        {
-            rot = new Vector3(-1, 0, 0);
-        }
-        else if (stair == Quaternion.Euler(0, -90, 0))
-        {
-            rot = new Vector3(1, 0, 0);
-        }
+        if (stair == Quaternion.identity) rot = new Vector3(0, 0, 1);
+        else if (stair == Quaternion.Euler(0, 180, 0)) rot = new Vector3(0, 0, -1);
+        else if (stair == Quaternion.Euler(0, 90, 0)) rot = new Vector3(1, 0, 0);
+        else if (stair == Quaternion.Euler(0, -90, 0)) rot = new Vector3(-1, 0, 0);
         else return rot;
 
         return rot;

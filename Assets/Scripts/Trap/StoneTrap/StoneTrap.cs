@@ -12,12 +12,26 @@ public class StoneTrap : MonoBehaviour
     [SerializeField] GameObject stonePrefab;
 
     GameObject stone;
+    bool isStoneSpawn;
+
+    void Start()
+    {
+        isStoneSpawn = false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
+        // 돌이 한번 생성되면 재생성되지 않아야함
         if (other.CompareTag("Player"))
         {
-            CreateStone(other.transform.position);
+            if (isStoneSpawn)
+            {
+                return;
+            }
+            else
+            {
+                CreateStone(other.transform.position);
+            }       
         }     
     }
  
@@ -29,10 +43,12 @@ public class StoneTrap : MonoBehaviour
             if (pos.x - (start.x - 0.5f) < (end.x + 0.5f) - pos.x)
             {
                 stone = Instantiate(stonePrefab, end + stoneStartPos, Quaternion.identity, transform);
+                stone.GetComponent<Stone>().direction = "West";
             }
             else if (pos.x - (start.x - 0.5f) > (end.x + 0.5f) - pos.x)
             {
                 stone = Instantiate(stonePrefab, start + stoneStartPos, Quaternion.identity, transform);
+                stone.GetComponent<Stone>().direction = "East";
             }
         }
         else if (direction == "Vertical")
@@ -40,11 +56,14 @@ public class StoneTrap : MonoBehaviour
             if (pos.z - (start.z - 0.5f) < (end.z + 0.5f) - pos.z)
             {
                 stone = Instantiate(stonePrefab, end + stoneStartPos, Quaternion.identity, transform);
+                stone.GetComponent<Stone>().direction = "South";
             }
             else if (pos.z - (start.z - 0.5f) > (end.z + 0.5f) - pos.z)
             {
                 stone = Instantiate(stonePrefab, start + stoneStartPos, Quaternion.identity, transform);
+                stone.GetComponent<Stone>().direction = "North";
             }
         }
+        isStoneSpawn = true;
     }
 }

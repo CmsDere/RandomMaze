@@ -20,10 +20,15 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // 생성
         mazeGen.GenerateMaze();
-        mazeInfo.CreateStoneTrapInfo();
+        mazeInfo.GenerateStoneTrapInfo();
         trapGen.GenerateTrapBase();
         trapGen.GenerateStoneTrap();
+
+        // 검증
+
+        // 플레이어 스폰
         playMan.GeneratePlayer();
     }
 }

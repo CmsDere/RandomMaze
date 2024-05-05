@@ -34,6 +34,7 @@ public class MazeComponent : MonoBehaviour
 
     [Header("함정 생성 개수")]
     [SerializeField] protected int stoneTrapAmount = 10;
+    [SerializeField] protected int arrowTrapAmount = 40;
 
     protected bool IsInRange(int x, int z)
     {
