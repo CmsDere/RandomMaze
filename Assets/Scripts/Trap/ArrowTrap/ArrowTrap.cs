@@ -6,29 +6,72 @@ public class ArrowTrap : MonoBehaviour
 {
     [Header("화살 함정 관련 변수")]
     [SerializeField] int arrowCount = 10;
+    [SerializeField] float moveSpeed = 1f;
 
     [Header("화살 함정 관련 프리팹")]
     [SerializeField] GameObject arrowPrefab;
 
-    GameObject[,,,] wallObjects;
-    GameObject[] arrowObjects;
+    GameObject arrowObject;
+    bool isPlayerEnter = false;
+
+    public Vector3 arrowTrapPos { get; set; }
+    public string arrowTrapDirection { get; set; }
 
     void Start()
     {
-        //wallObjects = GetComponent<MazeGenerator>().wallObjects;
-        arrowObjects = new GameObject[arrowCount];
+        
+    }
+
+    void Update()
+    {
+        if (isPlayerEnter)
+        {
+            ShootArrow();
+        }
     }
 
     void CreateArrow()
     {
-        for (int i = 0; i < arrowCount; i++)
+        if (arrowTrapDirection == "South")
         {
-            arrowObjects[i] = Instantiate
-                (
-                    arrowPrefab,
-                    wallObjects[1, 1, 1, 1].transform.position,
-                    Quaternion.identity
-                );
+            arrowObject = Instantiate(arrowPrefab, new Vector3(0, 0, 0.2f), Quaternion.Euler(0, 90, 0), transform);
+        }
+        else if (arrowTrapDirection == "East")
+        {
+            arrowObject = Instantiate(arrowPrefab, new Vector3(0.2f, 0, 0), Quaternion.identity, transform);
+        }
+    }
+
+    void ShootArrow()
+    {
+        if (arrowTrapDirection == "South")
+        {
+            arrowObject.transform.Translate(Vector3.back * moveSpeed * Time.deltaTime);
+        }
+        else if (arrowTrapDirection == "East")
+        {
+            arrowObject.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            isPlayerEnter = true;
+            if (isPlayerEnter) CreateArrow();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            isPlayerEnter = false;
+        }
+        else if (other.gameObject.CompareTag("Arrows"))
+        {
+            CreateArrow();
         }
     }
 }

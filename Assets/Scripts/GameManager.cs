@@ -23,8 +23,10 @@ public class GameManager : MonoBehaviour
         // 생성
         mazeGen.GenerateMaze();
         mazeInfo.GenerateStoneTrapInfo();
+        mazeInfo.GenerateArrowTrapInfo();
         trapGen.GenerateTrapBase();
         trapGen.GenerateStoneTrap();
+        trapGen.GenerateArrowTrap();
 
         // 검증
 

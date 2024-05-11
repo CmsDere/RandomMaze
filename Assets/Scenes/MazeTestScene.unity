@@ -313,6 +313,8 @@ MonoBehaviour:
   stoneTrapRange: 4
   maxRunwayLength: 4
   stoneTrapAmount: 10
+  arrowTrapAmount: 40
+  randomArrowCell: 
   mazeStartPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1027076391
 GameObject:
@@ -365,7 +367,9 @@ MonoBehaviour:
   stoneTrapRange: 4
   maxRunwayLength: 4
   stoneTrapAmount: 10
+  arrowTrapAmount: 40
   stoneTrapPrefab: {fileID: 647862935775951928, guid: c9dd941fe4b904544a9c9d7b0d885ba1, type: 3}
+  arrowTrapPrefab: {fileID: 4563226395242956595, guid: b306696f9253b56469d8ec6765cd1006, type: 3}
 --- !u!1 &1276965114
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +411,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1276965114}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9add95bd1228a234a83314ed8498c22a, type: 3}
+  m_Script: {fileID: 11500000, guid: df666a105915866459d4bfb2640c0002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mazeWidth: 20
@@ -417,6 +421,7 @@ MonoBehaviour:
   stoneTrapRange: 4
   maxRunwayLength: 4
   stoneTrapAmount: 10
+  arrowTrapAmount: 40
   cellPrefab: {fileID: 2742344623750909142, guid: 390fd95b3222d9341be3bd105e4562d6, type: 3}
   wallPrefab: {fileID: 5184235650078627104, guid: 969758f0d3e4a294ebb7e519cf2c81db, type: 3}
   stairPrefab: {fileID: 2934020102608372880, guid: e3078b106f997f946975c0b1165c2a6b, type: 3}

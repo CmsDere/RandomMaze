@@ -9,14 +9,18 @@ using UnityEngine;
 public class TrapGenerator : MazeComponent
 {
     [SerializeField] GameObject stoneTrapPrefab;
+    [SerializeField] GameObject arrowTrapPrefab;
 
     MazeInformation mI;
 
     GameObject[] trapBaseObjects;
     GameObject[] stoneTrapObjects;
+    GameObject[] arrowTrapObjects;
     int availableStoneTrap;
+    int availableArrowTrap;
 
-    List<int> randomRunwayIist = new List<int>();
+    List<int> randomRunwayList = new List<int>();
+    List<int> randomArrowTrapList = new List<int>();
 
     public float cellPosX { get; set; }
     public float cellPosY { get; set; }
@@ -24,12 +28,13 @@ public class TrapGenerator : MazeComponent
 
     void Awake()
     {
-        stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
         trapBaseObjects = new GameObject[(int)TRAP_TYPE.MAX];
+        stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
+        arrowTrapObjects = new GameObject[stageLength * arrowTrapAmount];
         mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();    
     }
 
-    // 함정 최종 생성==
+    // 함정 최종 생성===
     // 돌 함정 최종 생성
     public void GenerateStoneTrap()
     {
@@ -38,27 +43,64 @@ public class TrapGenerator : MazeComponent
         for (int i = 0; i < stageLength * stoneTrapAmount; i++)
         {
             int r = Random.Range(0, availableStoneTrap);
-            randomRunwayIist.Add(r);
-            if (randomRunwayIist.Count != randomRunwayIist.Distinct().Count())
+            randomRunwayList.Add(r);
+            if (randomRunwayList.Count != randomRunwayList.Distinct().Count())
             {
-                randomRunwayIist = randomRunwayIist.Distinct().ToList();
+                randomRunwayList = randomRunwayList.Distinct().ToList();
             }
         }
 
-        for (int i = 0; i < randomRunwayIist.Count; i++)
+        for (int i = 0; i < randomRunwayList.Count; i++)
         {
-            CreateStoneTrap(randomRunwayIist[i], i);
+            CreateStoneTrap(randomRunwayList[i], i);
         }
     }
+    //==
 
     // 화살 함정 최종 생성
     public void GenerateArrowTrap()
     {
+        availableArrowTrap = mI.arrowCell.Count;
+        for(int i = 0; i < stageLength * arrowTrapAmount; i++)
+        {
+            int r = Random.Range(0, availableArrowTrap);
+            randomArrowTrapList.Add(r);
+            if (randomArrowTrapList.Count != randomArrowTrapList.Distinct().Count())
+            {
+                randomArrowTrapList = randomArrowTrapList.Distinct().ToList();
+            }          
+        }
+
+        for (int i = 0; i < randomArrowTrapList.Count; i++)
+        {
+            CreateArrowTrap(randomArrowTrapList[i], i);
+        }
 
     }
     //==
 
-    //돌 함정 생성 관련==
+    //===
+
+    // 화살 함정 생성 관련
+    void CreateArrowTrap(int arrowIndex, int arrowTrapIndex)
+    {
+        Vector3 pos = mI.arrowCell[arrowIndex].pos;
+        string direction = mI.arrowCell[arrowIndex].direction;
+
+        arrowTrapObjects[arrowTrapIndex] = Instantiate
+            (
+                arrowTrapPrefab,
+                transform.TransformDirection(pos),
+                Quaternion.identity
+            );
+        arrowTrapObjects[arrowTrapIndex].name = $"ArrowTrap {arrowTrapIndex}";
+        arrowTrapObjects[arrowTrapIndex].transform.parent = trapBaseObjects[(int)TRAP_TYPE.ARROW_TRAP].transform;
+        arrowTrapObjects[arrowTrapIndex].GetComponent<ArrowTrap>().arrowTrapPos = pos;
+        arrowTrapObjects[arrowTrapIndex].GetComponent<ArrowTrap>().arrowTrapDirection = direction;
+    }
+    //==
+
+    // 돌 함정 생성 관련==
     void CreateStoneTrap(int runwayIndex, int stoneTrapIndex)
     {
         Vector3 start = mI.runways[runwayIndex].start;

@@ -47,6 +47,10 @@ public class MazeInformation : MazeComponent
         // 2. 1에서 계산된 지점 중에 무작위로 함정 지점 지정 & 중복 확인
         // 3. 함정이 3개이하로 연속되는지 확인
         // 4. 함정의 위치에 계단이 존재하는지 확인
+        for (int i = 0; i < stageLength; i++)
+        {
+            FindCellOfTwoWall(0, 0, i);
+        }
     }
 
     // 화살 함정
@@ -72,24 +76,6 @@ public class MazeInformation : MazeComponent
                 return;
             }
             FindCellOfTwoWall(newX, newZ, stage);
-        }
-    }
-
-    void CreateArrowTrap()
-    {
-
-    }
-
-    void CreateArrowTrapInfo()
-    {
-        for (int i = 0; i < stageLength * arrowTrapAmount; i++)
-        {
-            int r = Random.Range(0, arrowCell.Count);
-            randomArrowCell.Add(r);
-            if (randomArrowCell.Count != randomArrowCell.Distinct().Count())
-            {
-                randomArrowCell = randomArrowCell.Distinct().ToList();
-            }
         }
     }
     //==
