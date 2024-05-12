@@ -5,7 +5,6 @@ using UnityEngine;
 public class ArrowTrap : MonoBehaviour
 {
     [Header("화살 함정 관련 변수")]
-    [SerializeField] int arrowCount = 10;
     [SerializeField] float moveSpeed = 1f;
 
     [Header("화살 함정 관련 프리팹")]

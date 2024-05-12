@@ -22,14 +22,18 @@ public class GameManager : MonoBehaviour
     {
         // 생성
         mazeGen.GenerateMaze();
+        // 정보 생성
         mazeInfo.GenerateStoneTrapInfo();
         mazeInfo.GenerateArrowTrapInfo();
+        mazeInfo.GenerateSwampTrapInfo();
+        mazeInfo.GenerateFlameTrapInfo();
+        mazeInfo.RemoveDuplicatePositionWithOtherTrap();
+        // 함정 생성
         trapGen.GenerateTrapBase();
         trapGen.GenerateStoneTrap();
         trapGen.GenerateArrowTrap();
-
-        // 검증
-
+        trapGen.GenerateSwampTrap();
+        trapGen.GenerateFlameTrap();
         // 플레이어 스폰
         playMan.GeneratePlayer();
     }

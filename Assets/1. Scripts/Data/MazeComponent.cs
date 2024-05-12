@@ -7,7 +7,7 @@ public enum TRAP_TYPE
     STONE_TRAP,
     ARROW_TRAP,
     SWAMP_TRAP,
-    FALME_TRAP,
+    FLAME_TRAP,
     MAX
 }
 
@@ -35,6 +35,8 @@ public class MazeComponent : MonoBehaviour
     [Header("함정 생성 개수")]
     [SerializeField] protected int stoneTrapAmount = 10;
     [SerializeField] protected int arrowTrapAmount = 40;
+    [SerializeField] protected int swampTrapAmount = 40;
+    [SerializeField] protected int flameTrapAmount = 40;
 
     protected bool IsInRange(int x, int z)
     {

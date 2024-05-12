@@ -10,12 +10,16 @@ public class TrapGenerator : MazeComponent
 {
     [SerializeField] GameObject stoneTrapPrefab;
     [SerializeField] GameObject arrowTrapPrefab;
+    [SerializeField] GameObject swampTrapPrefab;
+    [SerializeField] GameObject flameTrapPrefab;
 
     MazeInformation mI;
 
     GameObject[] trapBaseObjects;
     GameObject[] stoneTrapObjects;
     GameObject[] arrowTrapObjects;
+    GameObject[] swampTrapObjects;
+    GameObject[] flameTrapObjects;
     int availableStoneTrap;
     int availableArrowTrap;
 
@@ -31,6 +35,8 @@ public class TrapGenerator : MazeComponent
         trapBaseObjects = new GameObject[(int)TRAP_TYPE.MAX];
         stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
         arrowTrapObjects = new GameObject[stageLength * arrowTrapAmount];
+        swampTrapObjects = new GameObject[stageLength * swampTrapAmount];
+        flameTrapObjects = new GameObject[stageLength * flameTrapAmount];
         mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();    
     }
 
@@ -79,7 +85,56 @@ public class TrapGenerator : MazeComponent
     }
     //==
 
+    // 늪 함정 최종 생성
+    public void GenerateSwampTrap()
+    {
+        for (int i = 0; i < mI.randomSwampTrapList.Count; i++)
+        {
+            CreateSwampTrap(i);
+        }
+    }
+    //==
+
+    // 화염 함정 최종 생성
+    public void GenerateFlameTrap()
+    {
+        for (int i = 0; i < mI.randomFlameTrapList.Count; i++)
+        {
+            CreateFlameTrap(i);
+        }
+    }
+    //==
     //===
+
+    // 화염 함정 생성 관련
+    void CreateFlameTrap(int flameIndex)
+    {
+        Vector3 pos = mI.randomFlameTrapList[flameIndex].pos;
+        flameTrapObjects[flameIndex] = Instantiate
+            (
+                flameTrapPrefab,
+                transform.TransformDirection(pos),
+                Quaternion.identity
+            );
+        flameTrapObjects[flameIndex].name = $"FlameTrap {flameIndex}";
+        flameTrapObjects[flameIndex].transform.parent = trapBaseObjects[(int)TRAP_TYPE.FLAME_TRAP].transform;
+    }
+    //==
+
+    // 늪 함정 생성 관련
+    void CreateSwampTrap(int swampIndex)
+    {
+        Vector3 pos = mI.randomSwampTrapList[swampIndex].pos;
+        swampTrapObjects[swampIndex] = Instantiate
+            (
+                swampTrapPrefab,
+                transform.TransformDirection(pos),
+                Quaternion.identity
+            );
+        swampTrapObjects[swampIndex].name = $"SwampTrap {swampIndex}";
+        swampTrapObjects[swampIndex].transform.parent = trapBaseObjects[(int)TRAP_TYPE.SWAMP_TRAP].transform;
+    }
+    //==
 
     // 화살 함정 생성 관련
     void CreateArrowTrap(int arrowIndex, int arrowTrapIndex)
