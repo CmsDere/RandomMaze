@@ -116,7 +116,11 @@ public class MazeGenerator : MazeComponent
             }
         }
 
-        if (stage < stageLength - 1) mazeInfo.stairList.Add((stairObjects[stage].transform.position, stage));
+        if (stage < stageLength - 1)
+        {
+            mazeInfo.stairList.Add((transform.TransformDirection(stairObjects[stage].transform.position), stage));
+        }     
+        mazeInfo.startPointList.Add((transform.TransformDirection(stageObjects[stage].transform.position), stage));
     }
 
     void DetermineExit(int stage)

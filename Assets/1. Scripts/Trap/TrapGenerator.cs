@@ -18,7 +18,8 @@ public class TrapGenerator : MazeComponent
     GameObject[] trapBaseObjects;
     GameObject[] stoneTrapObjects;
     GameObject[] arrowTrapObjects;
-    GameObject[] swampTrapObjects;
+    List<GameObject> swampTrapList = new List<GameObject>();
+    GameObject swampTrapObject;
     GameObject[] flameTrapObjects;
     int availableStoneTrap;
     int availableArrowTrap;
@@ -35,7 +36,6 @@ public class TrapGenerator : MazeComponent
         trapBaseObjects = new GameObject[(int)TRAP_TYPE.MAX];
         stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
         arrowTrapObjects = new GameObject[stageLength * arrowTrapAmount];
-        swampTrapObjects = new GameObject[stageLength * swampTrapAmount];
         flameTrapObjects = new GameObject[stageLength * flameTrapAmount];
         mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();    
     }
@@ -88,7 +88,7 @@ public class TrapGenerator : MazeComponent
     // 늪 함정 최종 생성
     public void GenerateSwampTrap()
     {
-        for (int i = 0; i < mI.randomSwampTrapList.Count; i++)
+        for (int i = 0; i < mI.swampTrapList.Count; i++)
         {
             CreateSwampTrap(i);
         }
@@ -98,10 +98,7 @@ public class TrapGenerator : MazeComponent
     // 화염 함정 최종 생성
     public void GenerateFlameTrap()
     {
-        for (int i = 0; i < mI.randomFlameTrapList.Count; i++)
-        {
-            CreateFlameTrap(i);
-        }
+        
     }
     //==
     //===
@@ -109,7 +106,7 @@ public class TrapGenerator : MazeComponent
     // 화염 함정 생성 관련
     void CreateFlameTrap(int flameIndex)
     {
-        Vector3 pos = mI.randomFlameTrapList[flameIndex].pos;
+        Vector3 pos = mI.flameTrapList[flameIndex].pos;
         flameTrapObjects[flameIndex] = Instantiate
             (
                 flameTrapPrefab,
@@ -124,15 +121,12 @@ public class TrapGenerator : MazeComponent
     // 늪 함정 생성 관련
     void CreateSwampTrap(int swampIndex)
     {
-        Vector3 pos = mI.randomSwampTrapList[swampIndex].pos;
-        swampTrapObjects[swampIndex] = Instantiate
-            (
-                swampTrapPrefab,
-                transform.TransformDirection(pos),
-                Quaternion.identity
-            );
-        swampTrapObjects[swampIndex].name = $"SwampTrap {swampIndex}";
-        swampTrapObjects[swampIndex].transform.parent = trapBaseObjects[(int)TRAP_TYPE.SWAMP_TRAP].transform;
+        Vector3 pos = mI.swampTrapList[swampIndex].pos;
+        swampTrapObject = Instantiate(swampTrapPrefab, transform.TransformDirection(pos), Quaternion.identity);
+        swampTrapObject.name = $"SwampTrap {swampIndex}";
+        swampTrapObject.transform.parent = trapBaseObjects[(int)TRAP_TYPE.SWAMP_TRAP].transform;
+        swampTrapList.Add(swampTrapObject);
+        Debug.Log(swampTrapList[swampIndex].name);
     }
     //==
 

@@ -12,10 +12,11 @@ public class MazeInformation : MazeComponent
     bool[,,] stoneHorizontalVisited;
     bool[,,] stoneVerticalVisited;
     bool[,,] arrowVisited;
-    bool[,,] swampVisited;
     bool[,,] flameVisited;
 
     public List<(Vector3 pos, int stage)> stairList { get; set; } = new List<(Vector3 pos, int stage)>();
+    public List<(Vector3 pos, int stage)> startPointList { get; set; } = new List<(Vector3 pos, int stage)>();
+
     public List<(Vector3 start, Vector3 end, string direction)> runways { get; private set; } 
         = new List<(Vector3 start, Vector3 end, string direction)>();
     public List<(Vector3 pos, string direction)> arrowCell { get; private set; } 
@@ -23,8 +24,8 @@ public class MazeInformation : MazeComponent
     public List<Vector3> swampCell { get; private set; } = new List<Vector3>();
     public List<Vector3> flameCell { get; private set; } = new List<Vector3>();
 
-    public List<(Vector3 pos, int index)> randomSwampTrapList = new List<(Vector3 pos, int index)>();
-    public List<(Vector3 pos, int index)> randomFlameTrapList = new List<(Vector3 pos, int index)>();
+    public List<(Vector3 pos, int index)> swampTrapList = new List<(Vector3 pos, int index)>();
+    public List<(Vector3 pos, int index)> flameTrapList = new List<(Vector3 pos, int index)>();
 
     public Vector3 mazeStartPos;
 
@@ -35,7 +36,6 @@ public class MazeInformation : MazeComponent
         stoneHorizontalVisited = new bool[mazeWidth, mazeHeight, stageLength];
         stoneVerticalVisited = new bool[mazeWidth, mazeHeight, stageLength];
         arrowVisited = new bool[mazeWidth, mazeHeight, stageLength];
-        swampVisited = new bool[mazeWidth, mazeHeight, stageLength];
         flameVisited = new bool[mazeWidth, mazeHeight, stageLength];
         mazeStartPos = Vector3.zero;
     }
@@ -70,12 +70,110 @@ public class MazeInformation : MazeComponent
         // 2. 화염 함정과 중복되어 생성되지 않음. 돌, 화살 함정과 중복될 수 있음
         // 3. 계단과 중복되어 생성되지 않음
         // 4. 4개까지 연속하여 생성될 수 있음
-        for (int i = 0; i < stageLength; i++)
-        {
-            FindCellOfWholeWallToSwampTrap(0, 0, i);
-        }
+        // 5. 리스트 정렬 스테이지 순서로
+        FindCellOfWholeWall(swampCell);
         RemoveDuplicateSwampTrap();
+        RemoveDuplicateSwampTrapByRule();
+        swampTrapList = swampTrapList.OrderBy(x => x.pos.y).ToList();
+        Debug.Log(swampTrapList);
+        foreach(var s in swampTrapList)
+        {
+            Debug.Log(s.pos + " " + s.index);
+        }
     }
+
+    // 벽 개수에 상관없는 셀 찾기 (늪 함정, 화염 함정)
+    void FindCellOfWholeWall(List<Vector3> list)
+    {
+        for (int y = 0; y < stageLength; y++)
+        {
+            for (int x = 0; x < mazeWidth; x++)
+            {
+                for (int z = 0; z < mazeHeight; z++)
+                {
+                    list.Add(new Vector3(x, y, z));
+                }
+            }
+        }
+        Debug.Log("FindCellOfWholeWall");
+    }
+
+    // 지정된 개수의 위치를 뽑고 중복된 위치의 지점 제거
+    void RemoveDuplicateSwampTrap()
+    {
+        int i = 0;
+        while (i < swampTrapAmount * stageLength)
+        {
+            int r = Random.Range(0, swampCell.Count);
+            swampTrapList.Add((swampCell[r], i));
+            if (swampTrapList.Count != (from pos in swampTrapList select pos).Distinct().Count())
+            {
+                swampTrapList = (from pos in swampTrapList select pos).Distinct().ToList();
+                i--;
+            }
+            else i++;
+        }
+        foreach (var s in swampTrapList)
+        {
+            Debug.Log(s.pos + " " + s.index);
+        }
+        Debug.Log("RemoveDuplicateSwampTrap");
+    }
+    // 출발지점, 계단지점, 화염함정, 4개 초과 연속 검사
+    void RemoveDuplicateSwampTrapByRule()
+    {
+        // 출발 지점과 중복되지 않음
+        swampTrapList = swampTrapList.Where(x => startPointList.Count(s => x.pos == s.pos) == 0).ToList();
+        // 계단 지점과 중복되지 않음
+        swampTrapList = swampTrapList.Where(x => stairList.Count(s => x.pos == s.pos) == 0).ToList();
+        // 화염 함정과 중복되지 않음
+        swampTrapList = swampTrapList.Where(x => flameTrapList.Count(s => x.pos == s.pos) == 0).ToList();
+        // 4개 초과 연속 검사
+        FindHorizontalContinousSwampTrap();
+        FindVerticalContinousSwampTrap();
+        foreach(var s in swampTrapList)
+        {
+            Debug.Log(s.pos + " " + s.index);
+        }
+        Debug.Log("RemoveDuplicateSwampTrapByRule");
+        
+    }
+
+    void FindHorizontalContinousSwampTrap()
+    {
+        var hcstQ = from list in swampTrapList where (
+                    (list.pos.x == list.pos.x + 1) && (list.pos.x == list.pos.x + 2) && (list.pos.x == list.pos.x + 3)
+                    && (list.pos.x == list.pos.x + 4) && (list.pos.x == list.pos.x + 5)
+                    ) select list;
+        if (swampTrapList.Count != (hcstQ).Distinct().Count())
+        {
+            swampTrapList = (hcstQ).Distinct().ToList();
+        }
+        foreach (var s in swampTrapList)
+        {
+            Debug.Log(s.pos + " " + s.index);
+        }
+        Debug.Log("FindHorizontalContinousSwampTrap");
+    }
+
+    void FindVerticalContinousSwampTrap()
+    {
+        var vcstQ = from list in swampTrapList
+                    where (
+                    (list.pos.z == list.pos.z + 1) && (list.pos.z == list.pos.z + 2) && (list.pos.z == list.pos.z + 3)
+                    && (list.pos.z == list.pos.z + 4) && (list.pos.z == list.pos.z + 5))
+                    select list;
+        if (swampTrapList.Count != (vcstQ).Distinct().Count())
+        {
+            swampTrapList = (vcstQ).Distinct().ToList();
+        }
+        foreach (var s in swampTrapList)
+        {
+            Debug.Log(s.pos + " " + s.index);
+        }
+        Debug.Log("FindVerticalContinousSwampTrap");
+    }
+    // ==
 
     public void GenerateFlameTrapInfo()
     {
@@ -87,14 +185,14 @@ public class MazeInformation : MazeComponent
         {
             FindCellOfWholeWallToFlameTrap(0, 0, i);
         }
-        RemoveDuplicateFlameTrap();
+        
     }
 
     public void RemoveDuplicatePositionWithOtherTrap()
     {
-        randomSwampTrapList = randomSwampTrapList.Where(x => stairList.Count(s => x.pos == s.pos) == 0).ToList();
-        randomFlameTrapList = randomFlameTrapList.Where(x => stairList.Count(s => x.pos == s.pos) == 0).ToList();
-        randomFlameTrapList = randomFlameTrapList.Where(x => randomSwampTrapList.Count(s => x.pos == s.pos) == 0).ToList();
+        swampTrapList = swampTrapList.Where(x => stairList.Count(s => x.pos == s.pos) == 0).ToList();
+        flameTrapList = flameTrapList.Where(x => stairList.Count(s => x.pos == s.pos) == 0).ToList();
+        flameTrapList = flameTrapList.Where(x => swampTrapList.Count(s => x.pos == s.pos) == 0).ToList();
     }
 
     // 화염 함정
@@ -117,38 +215,13 @@ public class MazeInformation : MazeComponent
         for (int i = 0; i < flameCell.Count; i++)
         {
             int r = Random.Range(0, flameCell.Count);
-            randomFlameTrapList.Add((flameCell[r], r));
-            randomFlameTrapList = (from pos in randomFlameTrapList select pos).Distinct().ToList();
+            flameTrapList.Add((flameCell[r], r));
+            flameTrapList = (from pos in flameTrapList select pos).Distinct().ToList();
         }
     }
     // ==
 
-    // 늪 함정
-    // 벽 개수에 따라 생성 가능한 지점 찾기
-    void FindCellOfWholeWallToSwampTrap(int x, int z, int stage)
-    {
-        swampVisited[x, z, stage] = true;
-
-        int newX = (x + 1 != mazeWidth) ? x + 1 : 0;
-        int newZ = (newX == 0) ? z + 1 : z;
-
-        if (IsInRange(newX, newZ) && !swampVisited[newX, newZ, stage])
-        {
-            swampCell.Add(new Vector3(x, stage, z));
-            FindCellOfWholeWallToSwampTrap(newX, newZ, stage);
-        }
-    }
-    // 중복된 위치의 지점 제거
-    void RemoveDuplicateSwampTrap()
-    {
-        for (int i = 0; i < swampCell.Count; i++)
-        {
-            int r = Random.Range(0, swampCell.Count);
-            randomSwampTrapList.Add((swampCell[r], r));
-            randomSwampTrapList = (from pos in randomSwampTrapList select pos).Distinct().ToList();
-        }
-    }
-    // ==
+    
 
     // 화살 함정
     void FindCellOfTwoWall(int x, int z, int stage)
