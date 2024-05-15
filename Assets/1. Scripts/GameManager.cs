@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
         // 沥焊 积己
         mazeInfo.GenerateStoneTrapInfo();
         mazeInfo.GenerateArrowTrapInfo();
-        mazeInfo.GenerateSwampTrapInfo();
+        mazeInfo.GenerateSwampTrapInfo2();
         //mazeInfo.GenerateFlameTrapInfo();
         //mazeInfo.RemoveDuplicatePositionWithOtherTrap();
         // 窃沥 积己

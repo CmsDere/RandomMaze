@@ -88,7 +88,7 @@ public class TrapGenerator : MazeComponent
     // 此 窃沥 弥辆 积己
     public void GenerateSwampTrap()
     {
-        for (int i = 0; i < mI.swampTrapList.Count; i++)
+        for (int i = 0; i < mI.swampTraps.Count; i++)
         {
             CreateSwampTrap(i);
         }
@@ -121,7 +121,7 @@ public class TrapGenerator : MazeComponent
     // 此 窃沥 积己 包访
     void CreateSwampTrap(int swampIndex)
     {
-        Vector3 pos = mI.swampTrapList[swampIndex].pos;
+        Vector3 pos = mI.swampTraps[swampIndex]._positon;
         swampTrapObject = Instantiate(swampTrapPrefab, transform.TransformDirection(pos), Quaternion.identity);
         swampTrapObject.name = $"SwampTrap {swampIndex}";
         swampTrapObject.transform.parent = trapBaseObjects[(int)TRAP_TYPE.SWAMP_TRAP].transform;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using DefinedTrap;
 
 public class MazeInformation : MazeComponent
 {
@@ -13,6 +14,9 @@ public class MazeInformation : MazeComponent
     bool[,,] stoneVerticalVisited;
     bool[,,] arrowVisited;
     bool[,,] flameVisited;
+
+    int wholeSwampAmount;
+    public Vector3 mazeStartPos;
 
     public List<(Vector3 pos, int stage)> stairList { get; set; } = new List<(Vector3 pos, int stage)>();
     public List<(Vector3 pos, int stage)> startPointList { get; set; } = new List<(Vector3 pos, int stage)>();
@@ -27,8 +31,6 @@ public class MazeInformation : MazeComponent
     public List<(Vector3 pos, int index)> swampTrapList = new List<(Vector3 pos, int index)>();
     public List<(Vector3 pos, int index)> flameTrapList = new List<(Vector3 pos, int index)>();
 
-    public Vector3 mazeStartPos;
-
     void Awake()
     {
         cellInfo = new bool[mazeWidth, stageLength, mazeHeight];
@@ -37,6 +39,8 @@ public class MazeInformation : MazeComponent
         stoneVerticalVisited = new bool[mazeWidth, mazeHeight, stageLength];
         arrowVisited = new bool[mazeWidth, mazeHeight, stageLength];
         flameVisited = new bool[mazeWidth, mazeHeight, stageLength];
+        
+        wholeSwampAmount = stageLength * swampTrapAmount;
         mazeStartPos = Vector3.zero;
     }
 
@@ -102,7 +106,7 @@ public class MazeInformation : MazeComponent
     void RemoveDuplicateSwampTrap()
     {
         int i = 0;
-        while (i < swampTrapAmount * stageLength)
+        while (i < wholeSwampAmount)
         {
             int r = Random.Range(0, swampCell.Count);
             swampTrapList.Add((swampCell[r], i));
@@ -328,4 +332,25 @@ public class MazeInformation : MazeComponent
         }
     }
     //==
+
+    public List<SwampTrap> swampTraps = new List<SwampTrap>();
+
+    public void GenerateSwampTrapInfo2()
+    {
+        
+        var query = from position in swampTraps select position;
+        
+        for (int i = 0; i < wholeSwampAmount; i++)
+        {
+            AddSwampTrap(i);
+        }
+        swampTraps = (query).Distinct().ToList();
+    }
+
+    void AddSwampTrap(int i)
+    {
+        int r = Random.Range(0, swampCell.Count);
+        SwampTrap st = new SwampTrap(i, TRAP_TYPE.SWAMP_TRAP, swampCell[r]);
+        swampTraps.Add(st);
+    }
 }
