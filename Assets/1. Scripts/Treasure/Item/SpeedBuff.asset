@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234089c6eb507a2458bd0817b5c5d369, type: 3}
   m_Name: SpeedBuff
   m_EditorClassIdentifier: 
-  itemIndex: 1
-  itemName: HealBuff
-  itmeType: 2
-  buffType: 1
+  itemIndex: 5
+  itemName: SpeedBuff
+  itmeType: 3
+  buffType: 0
   buffAmount: 10

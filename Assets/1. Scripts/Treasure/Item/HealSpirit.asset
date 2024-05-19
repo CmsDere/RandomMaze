@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234089c6eb507a2458bd0817b5c5d369, type: 3}
   m_Name: HealSpirit
   m_EditorClassIdentifier: 
-  itemIndex: 1
+  itemIndex: 3
   itemName: HealSpirit
   itmeType: 0
   buffType: 1

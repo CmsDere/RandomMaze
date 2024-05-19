@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234089c6eb507a2458bd0817b5c5d369, type: 3}
   m_Name: MazeApple
   m_EditorClassIdentifier: 
-  itemIndex: 1
+  itemIndex: 2
   itemName: MazeApple
   itmeType: 1
   buffType: 1
