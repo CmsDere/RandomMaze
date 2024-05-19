@@ -19,5 +19,6 @@ public class PlayerManager : MonoBehaviour
     {
         player = Instantiate(playerPrefab, mazeInfo.mazeStartPos, Quaternion.identity);
         player.tag = "Player";
+        GameManager.i.isPlayerSpawn = true;
     }
 }

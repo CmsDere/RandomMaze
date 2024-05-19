@@ -316,7 +316,11 @@ MonoBehaviour:
   arrowTrapAmount: 40
   swampTrapAmount: 40
   flameTrapAmount: 40
+  treasureAmount: 20
   mazeStartPos: {x: 0, y: 0, z: 0}
+  swampTrapList: []
+  flameTrapList: []
+  treasureList: []
 --- !u!1 &1027076391
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,6 +375,7 @@ MonoBehaviour:
   arrowTrapAmount: 40
   swampTrapAmount: 40
   flameTrapAmount: 40
+  treasureAmount: 20
   stoneTrapPrefab: {fileID: 647862935775951928, guid: c9dd941fe4b904544a9c9d7b0d885ba1, type: 3}
   arrowTrapPrefab: {fileID: 4563226395242956595, guid: b306696f9253b56469d8ec6765cd1006, type: 3}
   swampTrapPrefab: {fileID: 2205594430226169130, guid: ba87b61cf4a762a428dd4b7872f5131e, type: 3}
@@ -429,9 +434,55 @@ MonoBehaviour:
   arrowTrapAmount: 40
   swampTrapAmount: 40
   flameTrapAmount: 40
+  treasureAmount: 20
   cellPrefab: {fileID: 2742344623750909142, guid: 390fd95b3222d9341be3bd105e4562d6, type: 3}
   wallPrefab: {fileID: 5184235650078627104, guid: 969758f0d3e4a294ebb7e519cf2c81db, type: 3}
   stairPrefab: {fileID: 2934020102608372880, guid: e3078b106f997f946975c0b1165c2a6b, type: 3}
+--- !u!1 &1628758163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1628758165}
+  - component: {fileID: 1628758164}
+  m_Layer: 0
+  m_Name: TreasureGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1628758164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628758163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a43d5213d7d5d4c858d57abc00b0e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  treasurePrefab: {fileID: 7782980142917665289, guid: 7764adb167d3ddb498decb45814661e1, type: 3}
+--- !u!4 &1628758165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628758163}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2028919448
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,4 +536,5 @@ SceneRoots:
   - {fileID: 1276965115}
   - {fileID: 917615974}
   - {fileID: 1027076392}
+  - {fileID: 1628758165}
   - {fileID: 625808826}

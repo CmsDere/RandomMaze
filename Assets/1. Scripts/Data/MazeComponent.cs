@@ -20,6 +20,20 @@ public enum DIRECTION
     MAX
 }
 
+public enum ITEM_TYPE
+{
+    EQUIP,
+    FOOD,
+    BUFF_TIMER,
+    BUFF_CONST
+}
+
+public enum BUFF_TYPE
+{
+    SPEED,
+    HEALTH
+}
+
 public class MazeComponent : MonoBehaviour
 {
     [Header("미로 생성 관련 중요 변수")]
@@ -37,6 +51,9 @@ public class MazeComponent : MonoBehaviour
     [SerializeField] protected int arrowTrapAmount = 40;
     [SerializeField] protected int swampTrapAmount = 40;
     [SerializeField] protected int flameTrapAmount = 40;
+
+    [Header("보물 생성 개수")]
+    [SerializeField] protected int treasureAmount = 20;
 
     protected bool IsInRange(int x, int z)
     {

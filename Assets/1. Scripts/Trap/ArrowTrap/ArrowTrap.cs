@@ -16,11 +16,6 @@ public class ArrowTrap : MonoBehaviour
     public Vector3 arrowTrapPos { get; set; }
     public string arrowTrapDirection { get; set; }
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if (isPlayerEnter)
