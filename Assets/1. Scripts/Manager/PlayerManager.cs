@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DefineUI;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -21,5 +22,6 @@ public class PlayerManager : MonoBehaviour
         player.tag = "Player";
         GameManager.i.isPlayerSpawn = true;
         Cursor.visible = false;
+        UIManager.i.OpenUI(UIType.SWAP_UI);
     }
 }

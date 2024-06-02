@@ -11,6 +11,12 @@ namespace DefineUI
         FOOD_UI,
         EQUIP_UI,
         SWAP_UI,
-        HP_UI
+        HP_UI,
+        INVENTORY_UI
+    }
+
+    public struct SwapInfo
+    {
+        
     }
 }

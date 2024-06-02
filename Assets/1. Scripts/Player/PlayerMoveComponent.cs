@@ -8,6 +8,7 @@ public class PlayerMoveComponent : PlayerComponent
     [SerializeField] float gravity = 20f;
 
     CharacterController con;
+    
     Animator anim;
     Vector3 move;
 
@@ -40,6 +41,7 @@ public class PlayerMoveComponent : PlayerComponent
     void RotatePlayer()
     {
         transform.Rotate(0, Input.GetAxis("Mouse X") * rotateSpeed, 0, Space.World);
+        
     }
 
     void PlayerAnimation()
