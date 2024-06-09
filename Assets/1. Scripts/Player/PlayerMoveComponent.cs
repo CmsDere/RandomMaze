@@ -11,6 +11,7 @@ public class PlayerMoveComponent : PlayerComponent
     
     Animator anim;
     Vector3 move;
+    [SerializeField] Transform cameraTransform;
 
     void Start()
     {
@@ -22,7 +23,7 @@ public class PlayerMoveComponent : PlayerComponent
     void Update()
     {
         MovePlayer();
-        RotatePlayer();
+        //RotatePlayer();
         PlayerAnimation();
     }
 
@@ -31,7 +32,8 @@ public class PlayerMoveComponent : PlayerComponent
         if (con.isGrounded)
         {
             move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            move = transform.TransformDirection(move);
+            move = cameraTransform.TransformDirection(move);
+            transform.eulerAngles = move;
             move *= moveSpeed;
         }
         move.y -= gravity * Time.deltaTime;
@@ -40,7 +42,6 @@ public class PlayerMoveComponent : PlayerComponent
 
     void RotatePlayer()
     {
-        transform.Rotate(0, Input.GetAxis("Mouse X") * rotateSpeed, 0, Space.World);
         
     }
 

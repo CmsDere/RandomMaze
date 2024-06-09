@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 3341242670722216905}
   - component: {fileID: 6673948126154368343}
   - component: {fileID: 3532863068311401964}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Treasure
-  m_TagString: Untagged
+  m_TagString: Treasure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 53bf9d139973d77478c49efe8914446f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
