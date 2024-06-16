@@ -12,7 +12,8 @@ namespace DefineUI
         EQUIP_UI,
         SWAP_UI,
         HP_UI,
-        INVENTORY_UI
+        INVENTORY_UI,
+        INTERACT_UI
     }
 
     public struct SwapInfo

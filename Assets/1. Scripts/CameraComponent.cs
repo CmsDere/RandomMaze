@@ -1,20 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DefineUI;
 public class CameraComponent : MonoBehaviour
 {
     [SerializeField] float sensitivity = 500f;
-    Material outlineMat;
-
+    
     float rotationX;
     float rotationY;
     private Camera cam;
+    Vector3 center;
 
     void Awake()
     {
         cam = GetComponent<Camera>();
-        outlineMat = new Material(Shader.Find("Outline/PostprocessOutline"));
+        center = new Vector3(cam.pixelWidth / 2, cam.pixelHeight / 2);
     }
 
     void Update()
@@ -42,17 +42,28 @@ public class CameraComponent : MonoBehaviour
         transform.eulerAngles = new Vector3(-rotationX, rotationY, 0);
     }
 
+    GameObject box = null;
     void Interact()
     {
         RaycastHit hit;
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = cam.ScreenPointToRay(center);
 
         if (Physics.Raycast(ray, out hit))
         {
+            Debug.DrawRay(gameObject.transform.position, gameObject.transform.forward * hit.distance, Color.red);
             if (hit.transform.tag == "Treasure")
             {
-                Debug.Log("Treasure");
-                hit.transform.GetComponent<Renderer>().material = outlineMat;
+                box = hit.transform.gameObject;
+                box.GetComponent<TreasureBox>().isSelect = true;      
+            }
+            
+        }
+        else
+        {
+            if (box != null)
+            {
+                box.GetComponent<TreasureBox>().isSelect = false;
+                box = null;
             }
         }
         

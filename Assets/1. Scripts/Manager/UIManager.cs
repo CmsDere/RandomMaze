@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DefineUI;
+using UnityEditor;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager i;
-    Dictionary<UIType, UIBase> uiDatas = new Dictionary<UIType, UIBase>();
+    Dictionary<UIType, UIBase> uiDatas;
 
     void Awake()
     {
         i = this;
+        uiDatas = new Dictionary<UIType, UIBase>();
     }
 
     public void OpenUI(UIType ui)
@@ -32,12 +34,12 @@ public class UIManager : MonoBehaviour
     public UIBase CreateUI(UIType type)
     {
         UIBase uiBase = null;
-        string path = "2.Prefabs/UI/";
+        string path = "UIPrefabs/";
         GameObject uiPrefab = Resources.Load(path + type.ToString()) as GameObject;
 
         if (uiPrefab == null)
         {
-            Debug.Log($"{type.ToString()}이 존재하지 않음");
+            Debug.Log($"{type}이 존재하지 않음");
             return null;
         }
 
@@ -62,6 +64,12 @@ public class UIManager : MonoBehaviour
                 }
                 break;
             case UIType.TIME_UI:
+                break;
+            case UIType.INTERACT_UI:
+                {
+                    InteractUI ui = go.GetComponent<InteractUI>();
+                    uiBase = ui;
+                }
                 break;
         }
 

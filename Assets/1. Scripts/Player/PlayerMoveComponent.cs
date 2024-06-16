@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMoveComponent : PlayerComponent
 {
-    [SerializeField] float rotateSpeed = 1f;
+    [SerializeField] float rotateSpeed = 100f;
     [SerializeField] float gravity = 20f;
 
     CharacterController con;
@@ -23,8 +23,6 @@ public class PlayerMoveComponent : PlayerComponent
     void Update()
     {
         MovePlayer();
-        //RotatePlayer();
-        PlayerAnimation();
     }
 
     void MovePlayer()
@@ -33,23 +31,12 @@ public class PlayerMoveComponent : PlayerComponent
         {
             move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             move = cameraTransform.TransformDirection(move);
-            transform.eulerAngles = move;
+            transform.eulerAngles = new Vector3(0, cameraTransform.eulerAngles.y) ;
             move *= moveSpeed;
         }
         move.y -= gravity * Time.deltaTime;
         con.Move(move * Time.deltaTime);
     }
 
-    void RotatePlayer()
-    {
-        
-    }
-
-    void PlayerAnimation()
-    {
-        if (move.z >= 0)
-        {
-
-        }
-    }
+    
 }
