@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     void Awake()
     {
         i = this;
+        DontDestroyOnLoad(gameObject);
         uiDatas = new Dictionary<UIType, UIBase>();
     }
 
@@ -19,7 +20,7 @@ public class UIManager : MonoBehaviour
     {
         if(uiDatas.ContainsKey(ui))
         {
-            uiDatas[ui].UIOpen();
+            uiDatas[ui].Open();
         }
         else
         {
@@ -29,6 +30,24 @@ public class UIManager : MonoBehaviour
             else
                 Debug.Log($"{ui}가 생성되지 않음");
         }
+    }
+
+    public void CloseUI(UIType ui)
+    {
+        if (uiDatas.ContainsKey(ui))
+        {
+            uiDatas[ui].Close();
+        }
+        else
+            Debug.Log("생성되지 않은 UI임.");
+    }
+
+    public bool IsOpenedUI(UIType ui)
+    {
+        if (uiDatas.ContainsKey(ui))
+            return uiDatas[ui].gameObject.activeSelf;
+        else
+            return false;
     }
 
     public UIBase CreateUI(UIType type)

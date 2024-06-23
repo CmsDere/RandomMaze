@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DefineUI;
 
 public class TreasureBox : MonoBehaviour
 {
@@ -8,36 +9,29 @@ public class TreasureBox : MonoBehaviour
     bool isChange = true;
 
     Renderer renderers;
-    List<Material> materials = new List<Material>();
+    [SerializeField] List<Material> materials = new List<Material>();
     Material outlineMat;
 
     void Start()
     {
         outlineMat = new Material(Shader.Find("Outline/PostprocessOutline"));
         renderers = GetComponent<Renderer>();
+        materials.Add(renderers.sharedMaterial);
+        materials.Add(outlineMat);
     }
 
     void Update()
     {
         if (isSelect)
         {
-            materials.Clear();
-            materials.AddRange(renderers.sharedMaterials);
-            materials.Add(outlineMat);
-
-            renderers.materials = materials.ToArray();
-            isChange = false;
-            Debug.Log("T");
+            renderers.material = materials[1];
+            UIManager.i.OpenUI(UIType.INTERACT_UI);
         }
         else
         {
-            materials.Clear();
-            materials.AddRange(renderers.sharedMaterials);
-            materials.Remove(outlineMat);
-
-            renderers.materials = materials.ToArray();
-            isChange = true;
-            Debug.Log("F");
+            renderers.material = materials[0];
+            UIManager.i.CloseUI(UIType.INTERACT_UI);
+            
         }
     }
 }

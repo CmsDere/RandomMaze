@@ -58,6 +58,7 @@ public class CameraComponent : MonoBehaviour
             }
             
         }
+        // else ³¯¸®±â
         else
         {
             if (box != null)

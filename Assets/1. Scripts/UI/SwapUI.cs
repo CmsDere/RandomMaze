@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class SwapUI : UIBase
 {
-    public override void UIOpen()
+    public override void Open()
     {
-        base.UIOpen();
+        base.Open();
         Cursor.visible = true;
     }
 
-    public override void UIClose()
+    public override void Close()
     {
-        base.UIClose();
+        base.Close();
         Cursor.visible = false;
     }
 }

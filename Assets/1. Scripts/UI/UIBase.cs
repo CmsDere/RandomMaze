@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class UIBase : MonoBehaviour
 {
-    public virtual void UIOpen()
+    public virtual void Open()
     {
         gameObject.SetActive(true);
     }
 
-    public virtual void UIClose()
+    public virtual void Close()
     {
         gameObject.SetActive(false);
     }

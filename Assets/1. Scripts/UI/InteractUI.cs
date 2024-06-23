@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class InteractUI : UIBase
 {
-    public override void UIOpen()
+    public override void Open()
     {
-        base.UIOpen();
+        base.Open();
     }
 
-    public override void UIClose()
+    public override void Close()
     {
-        base.UIClose();
+        base.Close();
     }
 }
