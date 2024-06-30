@@ -118,3 +118,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e2aea0920dbdee4a87e346e04d2547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSelect: 0
+  materials: []

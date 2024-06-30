@@ -40,6 +40,7 @@ public class MazeComponent : MonoBehaviour
     [SerializeField] protected int mazeWidth = 20;
     [SerializeField] protected int mazeHeight = 20; 
     [SerializeField] protected int stageLength = 3;
+    [SerializeField] protected int maxShortcutCount = 20;
 
     [Header("함정 생성 정보")]
     [SerializeField] protected int trapAmount = 20;
@@ -54,6 +55,8 @@ public class MazeComponent : MonoBehaviour
 
     [Header("보물 생성 개수")]
     [SerializeField] protected int treasureAmount = 20;
+
+    protected string generateShortcutError = "지름길을 생성할 수 없는 벽입니다.";
 
     protected bool IsInRange(int x, int z)
     {

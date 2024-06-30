@@ -52,6 +52,9 @@ public class MazeInformation : MazeComponent
         mazeStartPos = Vector3.zero;
     }
 
+    // 지름길 생성
+
+
     // 보물 생성
     public void GenerateTreasureInfo()
     {

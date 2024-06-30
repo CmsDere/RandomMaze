@@ -25,12 +25,12 @@ public class TreasureBox : MonoBehaviour
         if (isSelect)
         {
             renderers.material = materials[1];
-            UIManager._instance.OpenUI(UIType.INTERACT_UI);
+            //UIManager._instance.OpenUI(UIType.INTERACT_UI);
         }
         else
         {
             renderers.material = materials[0];
-            UIManager._instance.CloseUI(UIType.INTERACT_UI);
+            //UIManager._instance.CloseUI(UIType.INTERACT_UI);
             
         }
     }

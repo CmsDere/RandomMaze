@@ -40,7 +40,11 @@ public class MazeGenerator : MazeComponent
             DFS(0, 0, i);
             DetermineExit(i);
             MoveMaze(i);
-            SendMazeInfo(i);
+        }
+        GenerateShortcut();
+        for (int j = 0; j < stageLength; j++)
+        {
+            SendMazeInfo(j);
         }
     }
 
@@ -293,6 +297,79 @@ public class MazeGenerator : MazeComponent
         {
             stageObjects[stage].transform.position += stairPos(stage) + stairRotToPos(stage);
             stageObjects[stage].transform.rotation = stairRotToStageRot(stage);
+        }
+    }
+
+    void GenerateShortcut()
+    {
+        int shortcutCount = Random.Range(10, maxShortcutCount);
+        Debug.Log($"지름길 생성 갯수는 {shortcutCount}개입니다.");
+        for (int i = 0; i < shortcutCount; i++)
+        {
+            int randomXCoord = Random.Range(0, mazeWidth);
+            int randomZCoord = Random.Range(0, mazeHeight);
+            int randomStage = Random.Range(0, stageLength);
+            int randomDirection = Random.Range(0, (int)DIRECTION.MAX);
+
+            // 좌표가 0,0일때 서쪽, 남쪽 벽 제거 불가
+            if (randomXCoord == 0 && randomZCoord == 0 && (randomDirection == (int)DIRECTION.SOUTH) || randomDirection == (int)DIRECTION.WEST)
+            {
+                Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : " + generateShortcutError);
+            }
+            // x좌표가 0일때 서쪽 벽 제거 불가
+            else if (randomXCoord == 0 && randomZCoord != 0 && randomDirection == (int)DIRECTION.WEST)
+            {
+                Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : " + generateShortcutError);
+            }
+            // x좌표가 19일때 동쪽 벽 제거 불가
+            else if (randomXCoord == mazeWidth - 1 && randomZCoord != 0 && randomDirection == (int)DIRECTION.EAST)
+            {
+                Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : " + generateShortcutError);
+            }
+            // z좌표가 0일때 남쪽 벽 제거 불가
+            else if (randomZCoord == 0 && randomXCoord != 0 && randomDirection == (int)DIRECTION.SOUTH)
+            {
+                Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : " + generateShortcutError);
+            }
+            // z좌표가 19일때 북쪽 벽 제거 불가
+            else if (randomZCoord == mazeHeight - 1 && randomXCoord != 0 && randomDirection == (int)DIRECTION.NORTH)
+            {
+                Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : " + generateShortcutError);
+            }
+            // 그 이외의 나머지 상황에서 벽 제거, 벽이 존재하지 않으면 건너뜀
+            else
+            {
+                if (wallObjects[randomXCoord, randomStage, randomZCoord, randomDirection].activeSelf == false)
+                {
+                    Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : " + generateShortcutError);
+                }
+                else
+                {
+                    // 방향이 북쪽일 때 벽과 맞닿아 있는 바로 다음 지점의 남쪽 벽 제거
+                    if (randomDirection == (int)DIRECTION.NORTH)
+                    {
+                        wallObjects[randomXCoord, randomStage, randomZCoord + 1, (int)DIRECTION.SOUTH].SetActive(false);
+                    }
+                    // 방향이 남쪽일 때 벽과 맞닿아 있는 바로 다음 지점의 북쪽 벽 제거
+                    else if (randomDirection == (int)DIRECTION.SOUTH)
+                    {
+                        wallObjects[randomXCoord, randomStage, randomZCoord - 1, (int)DIRECTION.NORTH].SetActive(false);
+                    }
+                    // 방향이 서쪽일 때 벽과 맞닿아 있는 바로 다음 지점의 동쪽 벽 제거
+                    else if (randomDirection == (int)DIRECTION.WEST)
+                    {
+                        wallObjects[randomXCoord - 1, randomStage, randomZCoord, (int)DIRECTION.EAST].SetActive(false);
+                    }
+                    // 방향이 동쪽일 때 벽과 맞닿아 있는 바로 다음 지점의 서쪽 벽 제거
+                    else if (randomDirection == (int)DIRECTION.EAST)
+                    {
+                        wallObjects[randomXCoord + 1, randomStage, randomZCoord, (int)DIRECTION.WEST].SetActive(false);
+                    }
+                    wallObjects[randomXCoord, randomStage, randomZCoord, randomDirection].SetActive(false);
+                    Debug.Log($"{i} [{randomXCoord}, {randomStage}, {randomZCoord}, {(DIRECTION)randomDirection}] : 지름길 생성 완료");
+                }
+                
+            }
         }
     }
 
