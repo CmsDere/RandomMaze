@@ -14,7 +14,7 @@ public class TreasureBox : MonoBehaviour
 
     void Start()
     {
-        outlineMat = new Material(Shader.Find("Outline/PostprocessOutline"));
+        outlineMat = new Material(Shader.Find("Custom/Outline"));
         renderers = GetComponent<Renderer>();
         materials.Add(renderers.sharedMaterial);
         materials.Add(outlineMat);
@@ -25,12 +25,12 @@ public class TreasureBox : MonoBehaviour
         if (isSelect)
         {
             renderers.material = materials[1];
-            UIManager.i.OpenUI(UIType.INTERACT_UI);
+            UIManager._instance.OpenUI(UIType.INTERACT_UI);
         }
         else
         {
             renderers.material = materials[0];
-            UIManager.i.CloseUI(UIType.INTERACT_UI);
+            UIManager._instance.CloseUI(UIType.INTERACT_UI);
             
         }
     }

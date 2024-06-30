@@ -4,15 +4,13 @@ using UnityEngine;
 using DefineUI;
 using UnityEditor;
 
-public class UIManager : MonoBehaviour
+public class UIManager : TSingleton<UIManager>
 {
-    public static UIManager i;
     Dictionary<UIType, UIBase> uiDatas;
 
-    void Awake()
+    protected override void Init()
     {
-        i = this;
-        DontDestroyOnLoad(gameObject);
+        base.Init();
         uiDatas = new Dictionary<UIType, UIBase>();
     }
 
