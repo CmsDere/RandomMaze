@@ -42,10 +42,13 @@ public class CameraComponent : MonoBehaviour
         transform.eulerAngles = new Vector3(-rotationX, rotationY, 0);
     }
 
-    GameObject box = null;
+    
     void Interact()
     {
         RaycastHit hit;
+        GameObject box = null;
+        GameObject target = GameObject.FindWithTag("Treasure");
+            
         Ray ray = cam.ScreenPointToRay(center);
 
         if (Physics.Raycast(ray, out hit))
@@ -55,6 +58,14 @@ public class CameraComponent : MonoBehaviour
             {
                 box = hit.transform.gameObject;
                 box.GetComponent<TreasureBox>().isSelect = true;      
+            }
+            else
+            {
+                if (box != null)
+                {
+                    box.GetComponent<TreasureBox>().isSelect = false;
+                    box = null;
+                }
             }
             
         }
