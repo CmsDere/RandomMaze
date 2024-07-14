@@ -8,28 +8,32 @@ public class TreasureBox : MonoBehaviour
     public bool isSelect = false;
 
     Renderer renderers;
+
     Material outlineMat;
-    Material originalMat;
+    [SerializeField] Material originalMat;
 
     void Start()
     {
-        outlineMat = new Material(Shader.Find("Custom/Outline"));
         renderers = GetComponent<Renderer>();
-        originalMat = renderers.sharedMaterial;
+        outlineMat = new Material(Shader.Find("Custom/Outline"));
     }
 
-    void Update()
+    public void SelectBox()
     {
-        if (isSelect)
+        renderers.material = outlineMat;
+        if (!UIManager._instance.IsOpenedUI(UIType.InteractUI))
         {
-            renderers.material = outlineMat;
-            //UIManager._instance.OpenUI(UIType.INTERACT_UI);
-        }
-        else
-        {
-            renderers.material = originalMat;
-            //UIManager._instance.CloseUI(UIType.INTERACT_UI);
-            
+            UIManager._instance.OpenUI(UIType.InteractUI);
         }
     }
+
+    public void DeselectBox()
+    {
+        renderers.material = originalMat;
+        if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
+        {
+            UIManager._instance.CloseUI(UIType.InteractUI);
+        }
+    }
+
 }

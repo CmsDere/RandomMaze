@@ -119,4 +119,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSelect: 0
-  materials: []
+  outlineMat: {fileID: 0}
+  originalMat: {fileID: 2100000, guid: c49055e62fe4844418aeb735384fee29, type: 2}

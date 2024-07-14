@@ -64,25 +64,25 @@ public class UIManager : TSingleton<UIManager>
 
         switch(type)
         {
-            case UIType.BUFF_UI:
+            case UIType.BuffUI:
                 break;
-            case UIType.EQUIP_UI:
+            case UIType.EquipUI:
                 break;
-            case UIType.FOOD_UI:
+            case UIType.FoodUI:
                 break;
-            case UIType.HP_UI:
+            case UIType.HPUI:
                 break;
-            case UIType.INVENTORY_UI:
+            case UIType.InventoryUI:
                 break;
-            case UIType.SWAP_UI:
+            case UIType.SwapUI:
                 {
                     SwapUI ui = go.GetComponent<SwapUI>();
                     uiBase = ui;
                 }
                 break;
-            case UIType.TIME_UI:
+            case UIType.TimeUI:
                 break;
-            case UIType.INTERACT_UI:
+            case UIType.InteractUI:
                 {
                     InteractUI ui = go.GetComponent<InteractUI>();
                     uiBase = ui;

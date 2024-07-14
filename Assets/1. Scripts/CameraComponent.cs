@@ -20,10 +20,6 @@ public class CameraComponent : MonoBehaviour
     void Update()
     {
         Move();
-    }
-
-    void FixedUpdate()
-    {
         Interact();
     }
 
@@ -46,38 +42,36 @@ public class CameraComponent : MonoBehaviour
     void Interact()
     {
         RaycastHit hit;
-        GameObject box = null;
-        GameObject target = GameObject.FindWithTag("Treasure");
+        GameObject target = null;
             
         Ray ray = cam.ScreenPointToRay(center);
 
         if (Physics.Raycast(ray, out hit))
         {
             Debug.DrawRay(gameObject.transform.position, gameObject.transform.forward * hit.distance, Color.red);
-            if (hit.transform.tag == "Treasure")
+            if (hit.transform.gameObject == GameObject.FindWithTag("Treasure"))
             {
-                box = hit.transform.gameObject;
-                box.GetComponent<TreasureBox>().isSelect = true;      
+                target = hit.transform.gameObject;
+                target.GetComponent<TreasureBox>().SelectBox();
             }
             else
             {
-                if (box != null)
+                if (target != null)
                 {
-                    box.GetComponent<TreasureBox>().isSelect = false;
-                    box = null;
+                    if (target == GameObject.FindWithTag("Treasure"))
+                    {
+                        target.GetComponent<TreasureBox>().DeselectBox();
+                    }
+                }
+                else
+                {
+
                 }
             }
-            
         }
-        // else ³¯¸®±â
         else
         {
-            if (box != null)
-            {
-                box.GetComponent<TreasureBox>().isSelect = false;
-                box = null;
-            }
+            GameObject.FindWithTag("Treasure").GetComponent<TreasureBox>().DeselectBox();
         }
-        
     }
 }
