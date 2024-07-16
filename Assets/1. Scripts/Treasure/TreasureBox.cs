@@ -6,32 +6,34 @@ using DefineUI;
 public class TreasureBox : MonoBehaviour
 {
     public bool isSelect = false;
-    bool isChange = true;
 
     Renderer renderers;
-    [SerializeField] List<Material> materials = new List<Material>();
+
     Material outlineMat;
+    [SerializeField] Material originalMat;
 
     void Start()
     {
-        outlineMat = new Material(Shader.Find("Custom/Outline"));
         renderers = GetComponent<Renderer>();
-        materials.Add(renderers.sharedMaterial);
-        materials.Add(outlineMat);
+        outlineMat = new Material(Shader.Find("Custom/Outline"));
     }
 
-    void Update()
+    public void SelectBox()
     {
-        if (isSelect)
+        renderers.material = outlineMat;
+        if (!UIManager._instance.IsOpenedUI(UIType.InteractUI))
         {
-            renderers.material = materials[1];
-            //UIManager._instance.OpenUI(UIType.INTERACT_UI);
-        }
-        else
-        {
-            renderers.material = materials[0];
-            //UIManager._instance.CloseUI(UIType.INTERACT_UI);
-            
+            UIManager._instance.OpenUI(UIType.InteractUI);
         }
     }
+
+    public void DeselectBox()
+    {
+        renderers.material = originalMat;
+        if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
+        {
+            UIManager._instance.CloseUI(UIType.InteractUI);
+        }
+    }
+
 }
