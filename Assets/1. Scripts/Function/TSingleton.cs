@@ -36,8 +36,6 @@ public class TSingleton<T> : MonoBehaviour where T : TSingleton<T>
     }
 
     // 상속 전용 클래스로 만듬
-    
-
     protected virtual void Init()
     {
         DontDestroyOnLoad(gameObject);

@@ -6,6 +6,7 @@ using DefineUI;
 public class TreasureBox : MonoBehaviour
 {
     public bool isSelect = false;
+    bool isExecute = false;
 
     Renderer renderers;
 
@@ -18,22 +19,43 @@ public class TreasureBox : MonoBehaviour
         outlineMat = new Material(Shader.Find("Custom/Outline"));
     }
 
+    void Update()
+    {
+        if (isSelect)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                // æ∆¿Ã≈€ »πµÊ
+            }
+        }
+    }
+
     public void SelectBox()
     {
-        renderers.material = outlineMat;
-        if (!UIManager._instance.IsOpenedUI(UIType.InteractUI))
+        if (isSelect && !isExecute)
         {
+            renderers.material = outlineMat;
             UIManager._instance.OpenUI(UIType.InteractUI);
+            isExecute = true;
         }
     }
 
     public void DeselectBox()
     {
-        renderers.material = originalMat;
-        if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
+        if(!isSelect && isExecute)
         {
-            UIManager._instance.CloseUI(UIType.InteractUI);
+            renderers.material = originalMat;
+            if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
+            {
+                UIManager._instance.CloseUI(UIType.InteractUI);
+            }
+            isExecute = false;
         }
+    }
+
+    void GetItem()
+    {
+
     }
 
 }

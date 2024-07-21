@@ -11,6 +11,8 @@ public class CameraComponent : MonoBehaviour
     private Camera cam;
     Vector3 center;
 
+    GameObject target;
+
     void Awake()
     {
         cam = GetComponent<Camera>();
@@ -42,36 +44,45 @@ public class CameraComponent : MonoBehaviour
     void Interact()
     {
         RaycastHit hit;
-        GameObject target = null;
             
         Ray ray = cam.ScreenPointToRay(center);
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(transform.position, transform.forward, out hit))
         {
             Debug.DrawRay(gameObject.transform.position, gameObject.transform.forward * hit.distance, Color.red);
-            if (hit.transform.gameObject == GameObject.FindWithTag("Treasure"))
+            if (hit.collider.gameObject.CompareTag("Treasure"))
             {
-                target = hit.transform.gameObject;
+                target = hit.collider.gameObject;
+                target.GetComponent<TreasureBox>().isSelect = true;
                 target.GetComponent<TreasureBox>().SelectBox();
             }
             else
             {
-                if (target != null)
+                if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
                 {
-                    if (target == GameObject.FindWithTag("Treasure"))
-                    {
-                        target.GetComponent<TreasureBox>().DeselectBox();
-                    }
+                    UIManager._instance.CloseUI(UIType.InteractUI);
                 }
-                else
-                {
-
-                }
+                return;
             }
         }
         else
         {
-            GameObject.FindWithTag("Treasure").GetComponent<TreasureBox>().DeselectBox();
+            if (target != null)
+            {
+                if (target.CompareTag("Treasure"))
+                {
+                    target.GetComponent<TreasureBox>().isSelect = false;
+                    target.GetComponent<TreasureBox>().DeselectBox();
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
         }
     }
 }

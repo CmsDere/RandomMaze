@@ -7,11 +7,15 @@ using UnityEditor;
 public class UIManager : TSingleton<UIManager>
 {
     Dictionary<UIType, UIBase> uiDatas;
+    
+    [SerializeField] GameObject uiPrefab;
 
     protected override void Init()
     {
         base.Init();
         uiDatas = new Dictionary<UIType, UIBase>();
+
+        Debug.Log("Init");
     }
 
     public void OpenUI(UIType ui)
@@ -52,7 +56,7 @@ public class UIManager : TSingleton<UIManager>
     {
         UIBase uiBase = null;
         string path = "UIPrefabs/";
-        GameObject uiPrefab = Resources.Load(path + type.ToString()) as GameObject;
+        //GameObject uiPrefab = Resources.Load(path + type.ToString()) as GameObject;
 
         if (uiPrefab == null)
         {

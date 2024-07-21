@@ -4,26 +4,15 @@ using UnityEngine;
 
 public class ItemComponent : MonoBehaviour
 {
-    // 보물 코드, 보물 이름, 보물 형태, 효과, 효과값
-    [SerializeField] int itemIndex;
-    [SerializeField] string itemName;
-    [SerializeField] Sprite itemSprite;
-    [SerializeField] ITEM_TYPE itemType;
-    [SerializeField] BUFF_TYPE buffType;
-    [SerializeField] int buffAmount;
+    Dictionary<string, Dictionary<string, string>> itemTable;
 
-    protected void UseItem(ITEM_TYPE itemType)
+    void Awake()
     {
-        switch(itemType)
-        {
-            case ITEM_TYPE.FOOD:
-                break;
-            case ITEM_TYPE.BUFF_TIMER:
-                break;
-            case ITEM_TYPE.BUFF_CONST:
-                break;
-        }
+        DataManager._instance.LoadAll();
     }
+
+    //DataManager2._instance.Get(TableName.ItemTable).ToString(3, ItemTable2.ColumnName.Explain.ToString()));
+    //DataManager2._instance.Get(TableName.MonsterTable).ToString(3, MonsterTable2.MonsterTableColumnName.Defence.ToString()));
 }
 
 
