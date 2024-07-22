@@ -14,8 +14,8 @@ public class UIManager : TSingleton<UIManager>
     {
         base.Init();
         uiDatas = new Dictionary<UIType, UIBase>();
-
         Debug.Log("Init");
+        PoolManager.instance.Create(UIType.InteractUI, transform);
     }
 
     public void OpenUI(UIType ui)
@@ -55,8 +55,7 @@ public class UIManager : TSingleton<UIManager>
     public UIBase CreateUI(UIType type)
     {
         UIBase uiBase = null;
-        string path = "UIPrefabs/";
-        //GameObject uiPrefab = Resources.Load(path + type.ToString()) as GameObject;
+        GameObject go = uiDatas[type].gameObject;
 
         if (uiPrefab == null)
         {
@@ -64,7 +63,7 @@ public class UIManager : TSingleton<UIManager>
             return null;
         }
 
-        GameObject go = Instantiate(uiPrefab, transform);
+        //GameObject go = Instantiate(uiPrefab, transform);
 
         switch(type)
         {

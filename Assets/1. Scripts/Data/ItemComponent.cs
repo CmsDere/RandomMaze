@@ -8,7 +8,7 @@ public class ItemComponent : MonoBehaviour
 
     void Awake()
     {
-        DataManager._instance.LoadAll();
+        DataManager.instance.LoadAll();
     }
 
     //DataManager2._instance.Get(TableName.ItemTable).ToString(3, ItemTable2.ColumnName.Explain.ToString()));

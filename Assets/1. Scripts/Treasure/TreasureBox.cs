@@ -35,7 +35,7 @@ public class TreasureBox : MonoBehaviour
         if (isSelect && !isExecute)
         {
             renderers.material = outlineMat;
-            UIManager._instance.OpenUI(UIType.InteractUI);
+            UIManager.instance.OpenUI(UIType.InteractUI);
             isExecute = true;
         }
     }
@@ -45,9 +45,9 @@ public class TreasureBox : MonoBehaviour
         if(!isSelect && isExecute)
         {
             renderers.material = originalMat;
-            if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
+            if (UIManager.instance.IsOpenedUI(UIType.InteractUI))
             {
-                UIManager._instance.CloseUI(UIType.InteractUI);
+                UIManager.instance.CloseUI(UIType.InteractUI);
             }
             isExecute = false;
         }
@@ -55,7 +55,8 @@ public class TreasureBox : MonoBehaviour
 
     void GetItem()
     {
-
+        // 상자 열리는 애니메이션
+        // 아이템의 실제 오브젝트 생성
     }
 
 }

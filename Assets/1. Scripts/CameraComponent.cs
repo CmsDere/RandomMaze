@@ -58,9 +58,9 @@ public class CameraComponent : MonoBehaviour
             }
             else
             {
-                if (UIManager._instance.IsOpenedUI(UIType.InteractUI))
+                if (UIManager.instance.IsOpenedUI(UIType.InteractUI))
                 {
-                    UIManager._instance.CloseUI(UIType.InteractUI);
+                    UIManager.instance.CloseUI(UIType.InteractUI);
                 }
                 return;
             }

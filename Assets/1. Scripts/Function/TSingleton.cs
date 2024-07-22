@@ -4,34 +4,34 @@ using UnityEngine;
 
 public class TSingleton<T> : MonoBehaviour where T : TSingleton<T>
 {
-    static volatile T _uniqueInstance;
-    static volatile GameObject _uniqueObject = null;
+    static volatile T uniqueInstance;
+    static volatile GameObject uniqueObject = null;
 
     protected TSingleton()
     {
-        _uniqueInstance = null;
-        _uniqueObject = null;
+        uniqueInstance = null;
+        uniqueObject = null;
     }
 
-    public static T _instance
+    public static T instance
     {
         get
         {
-            if (_uniqueInstance == null)
+            if (uniqueInstance == null)
             {
                 lock(typeof(T))
                 {
-                    if (_uniqueInstance == null && _uniqueObject == null)
+                    if (uniqueInstance == null && uniqueObject == null)
                     {
-                        _uniqueObject = new GameObject(typeof(T).Name, typeof(T));
-                        _uniqueInstance = _uniqueObject.GetComponent<T>();
+                        uniqueObject = new GameObject(typeof(T).Name, typeof(T));
+                        uniqueInstance = uniqueObject.GetComponent<T>();
 
-                        _uniqueInstance.Init();
+                        uniqueInstance.Init();
                     }
                 }
             }
 
-            return _uniqueInstance;
+            return uniqueInstance;
         }
     }
 
