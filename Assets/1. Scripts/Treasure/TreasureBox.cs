@@ -11,7 +11,7 @@ public class TreasureBox : MonoBehaviour
     Renderer renderers;
 
     Material outlineMat;
-    [SerializeField] Material originalMat;
+    Material originalMat;
 
     void Start()
     {

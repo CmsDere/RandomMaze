@@ -7,15 +7,22 @@ using UnityEditor;
 public class UIManager : TSingleton<UIManager>
 {
     Dictionary<UIType, UIBase> uiDatas;
-    
-    [SerializeField] GameObject uiPrefab;
 
     protected override void Init()
     {
         base.Init();
         uiDatas = new Dictionary<UIType, UIBase>();
-        Debug.Log("Init");
-        PoolManager.instance.Create(UIType.InteractUI, transform);
+
+        CreateUI(UIType.InteractUI);
+    }
+
+    public void CreateUI(UIType type)
+    {
+        UIBase ui = CreateBase(type);
+        if (ui != null)
+        {
+            uiDatas.Add(type, ui);
+        }
     }
 
     public void OpenUI(UIType ui)
@@ -26,11 +33,7 @@ public class UIManager : TSingleton<UIManager>
         }
         else
         {
-            UIBase uiBase = CreateUI(ui);
-            if (uiBase != null)
-                uiDatas.Add(ui, uiBase);
-            else
-                Debug.Log($"{ui}가 생성되지 않음");
+            Debug.Log($"{ui}가 생성되지 않음");
         }
     }
 
@@ -52,10 +55,10 @@ public class UIManager : TSingleton<UIManager>
             return false;
     }
 
-    public UIBase CreateUI(UIType type)
+    public UIBase CreateBase(UIType type)
     {
         UIBase uiBase = null;
-        GameObject go = uiDatas[type].gameObject;
+        GameObject uiPrefab = Resources.Load("UIPrefabs/" + type.ToString()) as GameObject;
 
         if (uiPrefab == null)
         {
@@ -63,7 +66,7 @@ public class UIManager : TSingleton<UIManager>
             return null;
         }
 
-        //GameObject go = Instantiate(uiPrefab, transform);
+        GameObject go = Instantiate(uiPrefab, transform);
 
         switch(type)
         {
