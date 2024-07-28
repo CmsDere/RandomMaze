@@ -13,6 +13,7 @@ namespace DefineUI
         SwapUI,
         HPUI,
         InventoryUI,
-        InteractUI
+        InteractUI,
+        GetItemUI
     }
 }

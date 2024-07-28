@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DefineUI;
+using DefineTable;
+using DefinedItem;
 
 public class TreasureBox : MonoBehaviour
 {
     public bool isSelect = false;
     bool isExecute = false;
+    bool isOpen = false;
 
     Material outlineMat;
     [SerializeField] Material originalMat;
@@ -66,10 +69,36 @@ public class TreasureBox : MonoBehaviour
 
     void GetItem()
     {
-        // 상자 열리는 애니메이션
-        animator.SetBool("IsOpen", true);
-        // 아이템의 실제 오브젝트 생성
-
+        if (!isOpen)
+        {
+            isOpen = true;
+            StartCoroutine(GetItemRoutine());
+        }
+        else
+        {
+            Debug.Log("이미 열린 상자입니다.");
+        }
     }
 
+    IEnumerator GetItemRoutine()
+    {
+        animator.SetBool("IsOpen", true);
+        ActiveItemObject();
+        UIManager.instance.OpenUI(UIType.GetItemUI);
+        yield return new WaitForSeconds(3f);
+        Destroy(gameObject);
+        if (UIManager.instance.IsOpenedUI(UIType.GetItemUI))
+        {
+            UIManager.instance.CloseUI(UIType.GetItemUI);
+        }
+        yield break;
+    }
+
+    void ActiveItemObject()
+    {
+        int itemCount = transform.childCount - 4;
+        int drop = Random.Range(0, itemCount);
+
+        transform.GetChild(drop + 4).gameObject.SetActive(true);
+    }
 }

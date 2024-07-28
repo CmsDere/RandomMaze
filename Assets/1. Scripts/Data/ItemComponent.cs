@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ItemComponent : MonoBehaviour
 {
-    Dictionary<string, Dictionary<string, string>> itemTable;
+    
 
     void Awake()
     {

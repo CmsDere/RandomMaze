@@ -11,12 +11,31 @@ public class UIManager : TSingleton<UIManager>
     protected override void Init()
     {
         base.Init();
+        Debug.Log("UIManager");
         uiDatas = new Dictionary<UIType, UIBase>();
 
-        CreateUI(UIType.InteractUI);
+        GenerateUI();
     }
 
-    public void CreateUI(UIType type)
+    void GenerateUI()
+    {
+        CreateOpenUI(UIType.HPUI);
+        CreateCloseUI(UIType.InteractUI);
+        CreateCloseUI(UIType.GetItemUI);
+    }
+
+    public void CreateCloseUI(UIType type)
+    {
+        CreateUI(type);
+        uiDatas[type].Close();
+    }
+
+    public void CreateOpenUI(UIType type)
+    {
+        CreateUI(type);
+    }
+
+    void CreateUI(UIType type)
     {
         UIBase ui = CreateBase(type);
         if (ui != null)
@@ -77,6 +96,10 @@ public class UIManager : TSingleton<UIManager>
             case UIType.FoodUI:
                 break;
             case UIType.HPUI:
+                {
+                    HPUI ui = go.GetComponent<HPUI>();
+                    uiBase = ui;
+                }
                 break;
             case UIType.InventoryUI:
                 break;
@@ -91,6 +114,12 @@ public class UIManager : TSingleton<UIManager>
             case UIType.InteractUI:
                 {
                     InteractUI ui = go.GetComponent<InteractUI>();
+                    uiBase = ui;
+                }
+                break;
+            case UIType.GetItemUI:
+                {
+                    GetItemUI ui = go.GetComponent<GetItemUI>();
                     uiBase = ui;
                 }
                 break;

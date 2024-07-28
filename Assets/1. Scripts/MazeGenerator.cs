@@ -295,8 +295,8 @@ public class MazeGenerator : MazeComponent
         }
         else
         {
-            stageObjects[stage].transform.position += stairPos(stage) + stairRotToPos(stage);
-            stageObjects[stage].transform.rotation = stairRotToStageRot(stage);
+            stageObjects[stage].transform.position += StairPos(stage) + StairRotToPos(stage);
+            stageObjects[stage].transform.rotation = StairRotToStageRot(stage);
         }
     }
 
@@ -373,7 +373,7 @@ public class MazeGenerator : MazeComponent
         }
     }
 
-    Quaternion stairRotToStageRot(int stage)
+    public Quaternion StairRotToStageRot(int stage)
     {
         Quaternion result = Quaternion.identity;
         Quaternion stair = stairObjects[stage - 1].transform.rotation;
@@ -386,7 +386,7 @@ public class MazeGenerator : MazeComponent
         return result;
     }
 
-    Vector3 stairPos(int stage)
+    Vector3 StairPos(int stage)
     {
         Vector3 pos = Vector3.zero;
         Vector3 stair = stairObjects[stage - 1].transform.position;
@@ -396,7 +396,7 @@ public class MazeGenerator : MazeComponent
         return pos;
     }
 
-    Vector3 stairRotToPos(int stage)
+    Vector3 StairRotToPos(int stage)
     {
         Vector3 rot = Vector3.zero;
         Quaternion stair = stairObjects[stage - 1].transform.rotation;
