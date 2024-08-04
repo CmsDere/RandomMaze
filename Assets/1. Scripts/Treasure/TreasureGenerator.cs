@@ -30,6 +30,10 @@ public class TreasureGenerator : MazeComponent
         {
             CreateTreasure(j);
         }
+        for (int k = 0; k < stageLength; k++)
+        {
+            MoveStageForTreasure(k);
+        }
     }
 
     void CreateTreasure(int id)
@@ -43,6 +47,14 @@ public class TreasureGenerator : MazeComponent
 
     void MoveStageForTreasure(int stage)
     {
-
+        if (stage == 0)
+        {
+            return;
+        }
+        else
+        {
+            stageForTreasure[stage].transform.position += mG.StairPos(stage) + mG.StairRotToPos(stage);
+            stageForTreasure[stage].transform.rotation = mG.StairRotToStageRot(stage);
+        }
     }
 }

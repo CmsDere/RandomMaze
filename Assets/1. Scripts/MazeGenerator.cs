@@ -386,7 +386,7 @@ public class MazeGenerator : MazeComponent
         return result;
     }
 
-    Vector3 StairPos(int stage)
+    public Vector3 StairPos(int stage)
     {
         Vector3 pos = Vector3.zero;
         Vector3 stair = stairObjects[stage - 1].transform.position;
@@ -396,7 +396,7 @@ public class MazeGenerator : MazeComponent
         return pos;
     }
 
-    Vector3 StairRotToPos(int stage)
+    public Vector3 StairRotToPos(int stage)
     {
         Vector3 rot = Vector3.zero;
         Quaternion stair = stairObjects[stage - 1].transform.rotation;

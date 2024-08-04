@@ -601,50 +601,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbaa504de0a87ea4eb7927df78913e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1506582831
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1506582833}
-  - component: {fileID: 1506582832}
-  m_Layer: 0
-  m_Name: PoolManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1506582832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506582831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7f589cf504cef54cbfd9e14019b071c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1506582833
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506582831}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1628758163
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,6 +630,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a43d5213d7d5d4c858d57abc00b0e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mazeWidth: 20
+  mazeHeight: 20
+  stageLength: 3
+  maxShortcutCount: 20
+  trapAmount: 20
+  stoneTrapRange: 4
+  maxRunwayLength: 4
+  stoneTrapAmount: 10
+  arrowTrapAmount: 40
+  swampTrapAmount: 40
+  flameTrapAmount: 40
+  treasureAmount: 20
   treasurePrefab: {fileID: 3910052266706347135, guid: 324cd2fc81dccfc41ae2e597f07829e3, type: 3}
 --- !u!4 &1628758165
 Transform:
@@ -744,7 +712,6 @@ SceneRoots:
   - {fileID: 917615974}
   - {fileID: 1027076392}
   - {fileID: 1628758165}
-  - {fileID: 1506582833}
   - {fileID: 632515398}
   - {fileID: 625808826}
   - {fileID: 436035370}
