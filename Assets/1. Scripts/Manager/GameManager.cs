@@ -36,11 +36,7 @@ public class GameManager : MonoBehaviour
         mazeInfo.GenerateSwampTrapInfo();
         mazeInfo.GenerateFlameTrapInfo();
         // 함정 생성
-        trapGen.GenerateTrapBase();
-        trapGen.GenerateStoneTrap();
-        trapGen.GenerateArrowTrap();
-        trapGen.GenerateSwampTrap();
-        trapGen.GenerateFlameTrap();
+        trapGen.GenerateTrap();
         // 보물 정보 생성
         mazeInfo.GenerateTreasureInfo();
         // 보물 생성

@@ -14,7 +14,7 @@ public class MazeGenerator : MazeComponent
 
     public GameObject[,,] cellObjects { get; private set; }
     public GameObject[,,,] wallObjects { get; private set; }
-    GameObject[] stageObjects;
+    public GameObject[] stageObjects;
     GameObject[] stairObjects;
 
     MazeInformation mazeInfo;
