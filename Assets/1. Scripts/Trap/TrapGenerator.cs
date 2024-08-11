@@ -19,7 +19,7 @@ public class TrapGenerator : MazeComponent
 
     GameObject[] trapBaseObjects;
     GameObject[] stoneTrapObjects;
-    GameObject[,] stageObjectForTrap;
+    GameObject[] stageObjectForTrap;
     public List<GameObject> arrowTrapList { get; private set; } = new List<GameObject>();
     GameObject arrowTrapObject;
     List<GameObject> swampTrapList = new List<GameObject>();
@@ -40,7 +40,7 @@ public class TrapGenerator : MazeComponent
     {
         trapBaseObjects = new GameObject[(int)TRAP_TYPE.MAX];
         stoneTrapObjects = new GameObject[stageLength * stoneTrapAmount];
-        stageObjectForTrap = new GameObject[(int)TRAP_TYPE.MAX, stageLength];
+        stageObjectForTrap = new GameObject[stageLength];
 
         mI = GameObject.Find("MazeInformation").GetComponent<MazeInformation>();
         mG = GameObject.Find("MazeGenerator").GetComponent<MazeGenerator>();
@@ -59,21 +59,16 @@ public class TrapGenerator : MazeComponent
 
     void MoveAndRotateTrap()
     {
-        MoveRotateStoneTrap();
-    }
-
-    void MoveRotateStoneTrap()
-    {
-        for (int stage = 0; stage < stageLength; stage++) 
-        { 
+        for(int stage = 0; stage < stageLength; stage++)
+        {
             if (stage == 0)
             {
                 return;
             }
             else
             {
-                stageObjectForTrap[(int)TRAP_TYPE.STONE_TRAP, stage].transform.position = mG.stageObjects[stage].transform.position;
-                stageObjectForTrap[(int)TRAP_TYPE.STONE_TRAP, stage].transform.rotation = mG.stageObjects[stage].transform.rotation;
+                stageObjectForTrap[stage].transform.position = mG.stageObjects[stage].transform.position;
+                stageObjectForTrap[stage].transform.rotation = mG.stageObjects[stage].transform.rotation;
             }
         }
     }
@@ -150,7 +145,7 @@ public class TrapGenerator : MazeComponent
         Vector3 pos = mI.flameTrapList[id];
         flameTrapObject = Instantiate(flameTrapPrefab, transform.TransformDirection(pos), Quaternion.identity);
         flameTrapObject.name = $"FlameTrap {id}";
-        flameTrapObject.transform.parent = trapBaseObjects[(int)TRAP_TYPE.FLAME_TRAP].transform;
+        flameTrapObject.transform.parent = stageObjectForTrap[(int)pos.y].transform;
         flameTrapList.Add(flameTrapObject);
     }
     //==
@@ -161,7 +156,7 @@ public class TrapGenerator : MazeComponent
         Vector3 pos = mI.swampTrapList[id];
         swampTrapObject = Instantiate(swampTrapPrefab, transform.TransformDirection(pos), Quaternion.identity);
         swampTrapObject.name = $"SwampTrap {id}";
-        swampTrapObject.transform.parent = trapBaseObjects[(int)TRAP_TYPE.SWAMP_TRAP].transform;
+        swampTrapObject.transform.parent = stageObjectForTrap[(int)pos.y].transform;
         swampTrapList.Add(swampTrapObject);
     }
     //==
@@ -173,7 +168,7 @@ public class TrapGenerator : MazeComponent
         string direction = mI.arrowCell[arrowIndex].direction;
         arrowTrapObject = Instantiate(arrowTrapPrefab, transform.TransformDirection(pos), Quaternion.identity);
         arrowTrapObject.name = $"ArrowTrap {arrowTrapIndex}";
-        arrowTrapObject.transform.parent = trapBaseObjects[(int)TRAP_TYPE.ARROW_TRAP].transform;
+        arrowTrapObject.transform.parent = stageObjectForTrap[(int)pos.y].transform;
         arrowTrapObject.GetComponent<ArrowTrap>().arrowTrapPos = pos;
         arrowTrapObject.GetComponent<ArrowTrap>().arrowTrapDirection = direction;
         arrowTrapList.Add(arrowTrapObject);
@@ -198,7 +193,7 @@ public class TrapGenerator : MazeComponent
 
         box.size = new Vector3(stoneTrapSizeX(end.x, start.x, direction), 1, stoneTrapSizeZ(end.z, start.z, direction));
         stoneTrapObjects[stoneTrapIndex].name = $"StoneTrap {stoneTrapIndex}";
-        stoneTrapObjects[stoneTrapIndex].transform.parent = stageObjectForTrap[(int)TRAP_TYPE.STONE_TRAP, (int)pos.y].transform;
+        stoneTrapObjects[stoneTrapIndex].transform.parent = stageObjectForTrap[(int)pos.y].transform;
         
         stoneTrapObjects[stoneTrapIndex].GetComponent<StoneTrap>().start = start;
         stoneTrapObjects[stoneTrapIndex].GetComponent<StoneTrap>().end = end;
@@ -207,17 +202,12 @@ public class TrapGenerator : MazeComponent
         //Debug.Log($"TrapNum : {stoneTrapIndex}, Direction : {direction}, Start : {start}, End : {end}, Center : {center}");
     }
 
-    public void GenerateTrapBase()
+    void GenerateTrapBase()
     {
-        for (int i = 0; i < (int)TRAP_TYPE.MAX; i++)
+        for(int stage = 0; stage < stageLength; stage++)
         {
-            trapBaseObjects[i] = new GameObject($"{(TRAP_TYPE)i}");
-            trapBaseObjects[i].transform.parent = transform;
-            for (int j = 0; j < stageLength; j++)
-            {
-                stageObjectForTrap[i, j] = new GameObject($"Stage {j+1}");
-                stageObjectForTrap[i, j].transform.parent = trapBaseObjects[i].transform;
-            }
+            stageObjectForTrap[stage] = new GameObject($"Stage {stage + 1}");
+            stageObjectForTrap[stage].transform.parent = transform;
         }
     }
 

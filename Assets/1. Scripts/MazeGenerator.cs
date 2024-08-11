@@ -20,6 +20,9 @@ public class MazeGenerator : MazeComponent
     MazeInformation mazeInfo;
 
     Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
+    List<Vector3Int> exitCellList = new List<Vector3Int>();
+
+    Dictionary<int, Dictionary<Vector3Int, int>> distanceStage = new Dictionary<int, Dictionary<Vector3Int, int>>();
 
     void Awake()
     {
@@ -129,15 +132,35 @@ public class MazeGenerator : MazeComponent
 
     void DetermineExit(int stage)
     {
-        // 가장 먼 거리 찾기
-        int maxDistance = distanceMap.Values.Max();
-        // 해당 거리에 있는 셀 중 하나를 출구로 선택
-        Vector3Int exitCell = distanceMap.FirstOrDefault(x => x.Value == maxDistance).Key;
-        // 출구로 지정
-        SetAsExit(exitCell, stage);
+        // stage별로 dictionary 분리
+        for (int x = 0; x < mazeWidth; x++)
+        {
+            for (int z = 0; z < mazeHeight; z++)
+            {
+                distanceStage[stage] = distanceMap;
+            }
+        }
+
+        if (stage < stageLength - 1)
+        {
+            
+            /*bool isMax = true;
+            while (isMax)
+            {
+                maxDistance = distanceMap.Values.Max();
+                exitCell = distanceMap.FirstOrDefault(x => x.Value == maxDistance).Key;
+                if (exitCell.y == stage)
+                {
+                    exitCellList.Add(exitCell);
+                    isMax = false;
+                }
+            }*/
+        }
+
+        SetAsExit(exitCellList, stage);
     }
 
-    void SetAsExit(Vector3Int exitCell, int stage)
+    void SetAsExit(List<Vector3Int> exitCellList, int stage)
     {
         float stairHeight = stairPrefab.transform.lossyScale.y / 2;
         
@@ -146,10 +169,10 @@ public class MazeGenerator : MazeComponent
             stairObjects[stage] = Instantiate
             (
                 stairPrefab,
-                transform.TransformDirection(cellObjects[exitCell.x, exitCell.y, exitCell.z].transform.position + new Vector3(0, stairHeight, 0)),
-                StairDirection(exitCell.x, exitCell.y, exitCell.z)
+                transform.TransformDirection(cellObjects[exitCellList[stage].x, exitCellList[stage].y, exitCellList[stage].z].transform.position + new Vector3(0, stairHeight, 0)),
+                StairDirection(exitCellList[stage].x, exitCellList[stage].y, exitCellList[stage].z)
             );
-            stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCell.x}, {exitCell.z})";
+            stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCellList[stage].x}, {exitCellList[stage].z})";
             stairObjects[stage].transform.parent = stageObjects[stage].transform;
         }
         else
