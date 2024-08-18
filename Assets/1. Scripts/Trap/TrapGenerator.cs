@@ -61,14 +61,10 @@ public class TrapGenerator : MazeComponent
     {
         for(int stage = 0; stage < stageLength; stage++)
         {
-            if (stage == 0)
+            if (stage != 0)
             {
-                return;
-            }
-            else
-            {
-                stageObjectForTrap[stage].transform.position = mG.stageObjects[stage].transform.position;
-                stageObjectForTrap[stage].transform.rotation = mG.stageObjects[stage].transform.rotation;
+                stageObjectForTrap[stage].transform.position += mG.StairPos(stage) + mG.StairRotToPos(stage);
+                stageObjectForTrap[stage].transform.rotation = mG.StairRotToStageRot(stage);
             }
         }
     }

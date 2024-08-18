@@ -22,6 +22,7 @@ public class MazeGenerator : MazeComponent
     Dictionary<Vector3Int, int> distanceMap = new Dictionary<Vector3Int, int>();
     List<Vector3Int> exitCellList = new List<Vector3Int>();
 
+    List<Dictionary<Vector3Int, int>> distanceMapList = new List<Dictionary<Vector3Int, int>>();
     Dictionary<int, Dictionary<Vector3Int, int>> distanceStage = new Dictionary<int, Dictionary<Vector3Int, int>>();
 
     void Awake()
@@ -43,6 +44,7 @@ public class MazeGenerator : MazeComponent
             DFS(0, 0, i);
             DetermineExit(i);
             MoveMaze(i);
+            RemoveNextStageWall(i);
         }
         GenerateShortcut();
         for (int j = 0; j < stageLength; j++)
@@ -132,30 +134,39 @@ public class MazeGenerator : MazeComponent
 
     void DetermineExit(int stage)
     {
+        int maxDistance = 0;
+        Vector3Int exitCell = Vector3Int.zero;
+        Dictionary<Vector3Int, int> tempDistanceMap = new Dictionary<Vector3Int, int>();
+
         // stage별로 dictionary 분리
         for (int x = 0; x < mazeWidth; x++)
         {
             for (int z = 0; z < mazeHeight; z++)
             {
-                distanceStage[stage] = distanceMap;
+                if (distanceMap.ContainsKey(new Vector3Int(x, stage, z)))
+                {
+                    tempDistanceMap.Add(new Vector3Int(x, stage, z), distanceMap[new Vector3Int(x, stage, z)]);
+                }
+                else
+                {
+                    tempDistanceMap.Add(new Vector3Int(x, stage, z), 0);
+                }
             }
         }
+        distanceMapList.Add(tempDistanceMap);
 
-        if (stage < stageLength - 1)
-        {
-            
-            /*bool isMax = true;
-            while (isMax)
-            {
-                maxDistance = distanceMap.Values.Max();
-                exitCell = distanceMap.FirstOrDefault(x => x.Value == maxDistance).Key;
-                if (exitCell.y == stage)
-                {
-                    exitCellList.Add(exitCell);
-                    isMax = false;
-                }
-            }*/
-        }
+        /*if (stage < stageLength - 1)
+        { 
+            maxDistance = distanceMapList[stage].Values.Max();
+            exitCell = distanceMapList[stage].FirstOrDefault(x => x.Value == maxDistance).Key;
+            Debug.Log($"Stage{stage + 1}의 계단 위치는 {exitCell}");
+            exitCellList.Add(exitCell);
+        }*/
+
+        maxDistance = distanceMapList[stage].Values.Max();
+        exitCell = distanceMapList[stage].FirstOrDefault(x => x.Value == maxDistance).Key;
+        Debug.Log($"Stage{stage + 1}의 계단 위치는 {exitCell}");
+        exitCellList.Add(exitCell);
 
         SetAsExit(exitCellList, stage);
     }
@@ -163,8 +174,18 @@ public class MazeGenerator : MazeComponent
     void SetAsExit(List<Vector3Int> exitCellList, int stage)
     {
         float stairHeight = stairPrefab.transform.lossyScale.y / 2;
-        
-        if (stage < stageLength - 1)
+
+        stairObjects[stage] = Instantiate
+            (
+                stairPrefab,
+                transform.TransformDirection(cellObjects[exitCellList[stage].x, exitCellList[stage].y, exitCellList[stage].z].transform.position + new Vector3(0, stairHeight, 0)),
+                StairDirection(exitCellList[stage].x, exitCellList[stage].y, exitCellList[stage].z)
+            );
+        stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCellList[stage].x}, {exitCellList[stage].z})";
+        stairObjects[stage].transform.parent = stageObjects[stage].transform;
+        stairObjects[stage].GetComponent<Stair>().stairDirection = StairDirectionToStairRot(stage);
+
+        /*if (stage < stageLength - 1)
         {
             stairObjects[stage] = Instantiate
             (
@@ -174,11 +195,12 @@ public class MazeGenerator : MazeComponent
             );
             stairObjects[stage].name = $"Stage {stage + 1} Stair ({exitCellList[stage].x}, {exitCellList[stage].z})";
             stairObjects[stage].transform.parent = stageObjects[stage].transform;
+            stairObjects[stage].GetComponent<Stair>().stairDirection = StairDirectionToStairRot(stage);
         }
         else
         {
             return;
-        }  
+        } */
     }
 
     Quaternion StairDirection(int x, int stage, int z)
@@ -319,9 +341,18 @@ public class MazeGenerator : MazeComponent
         else
         {
             stageObjects[stage].transform.position += StairPos(stage) + StairRotToPos(stage);
-            stageObjects[stage].transform.rotation = StairRotToStageRot(stage);
+            stageObjects[stage].transform.rotation = StairRotToStageRot(stage); 
         }
+        
     }
+
+    void RemoveNextStageWall(int stage)
+    {
+        if (stage < stageLength - 1)
+        {
+            wallObjects[0, stage+1, 0, (int)StairDirectionToStairRot(stage)].SetActive(false);
+        }
+    }    
 
     void GenerateShortcut()
     {
@@ -396,10 +427,22 @@ public class MazeGenerator : MazeComponent
         }
     }
 
+    DIRECTION StairDirectionToStairRot(int stage)
+    {
+        DIRECTION dir = DIRECTION.MAX;
+
+        if (StairRotToStageRot(stage + 1) == Quaternion.identity) dir = DIRECTION.SOUTH;
+        else if (StairRotToStageRot(stage + 1) == Quaternion.Euler(0, 180, 0)) dir = DIRECTION.NORTH;
+        else if (StairRotToStageRot(stage + 1) == Quaternion.Euler(0, 90, 0)) dir = DIRECTION.WEST;
+        else if (StairRotToStageRot(stage + 1) == Quaternion.Euler(0, -90, 0)) dir = DIRECTION.EAST;
+
+        return dir;
+    }
+
     public Quaternion StairRotToStageRot(int stage)
     {
         Quaternion result = Quaternion.identity;
-        Quaternion stair = stairObjects[stage - 1].transform.rotation;
+        Quaternion stair = stairObjects[stage-1].transform.rotation;
 
         if (stair == Quaternion.identity) result = Quaternion.identity;
         else if (stair == Quaternion.Euler(0, 180, 0)) result = Quaternion.Euler(0, 180, 0);
